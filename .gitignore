@@ -1,0 +1,23 @@
+# secrets
+paul_ledger/app/.admin_code.txt
+**/.dev.vars
+**/.env*
+
+# live data copies (the real ledger lives in Cloudflare D1)
+paul_ledger/app/data/state.json
+
+# collection output, screenshots, logs, driver bridge
+output/
+shots/
+logs/
+bridge/
+elevated_out.txt
+server_out.txt
+server_err.txt
+
+# build / tooling
+__pycache__/
+*.pyc
+node_modules/
+paul_ledger/app/dist/
+paul_ledger/app/.wrangler/

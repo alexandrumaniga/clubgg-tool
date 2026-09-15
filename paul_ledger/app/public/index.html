@@ -1,0 +1,713 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Paul's Book</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#0E1112">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Paul's Book">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* ===== Paul's Book — TERMINAL. Single dark world, painted explicitly. ===== */
+:root{
+  --bg:#0E1112;--panel:#141819;--panel2:#111516;--rule:#1F2628;--rule2:#1A2022;
+  --text:#D7DEDC;--dim:#7C8886;--faint:#4F5A58;
+  --g:#59B37E;--r:#D95F5F;--a:#D9A441;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}html,body{margin:0}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+img{max-width:100%}[hidden]{display:none!important}.hidden{display:none!important}
+button,input,select,textarea{font-family:var(--mono)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.rhead:focus-visible{outline:1px solid var(--a);outline-offset:1px}
+.g{color:var(--g)}.r{color:var(--r)}.a{color:var(--a)}.dim{color:var(--dim)}
+
+/* ---- login ---- */
+#login,#conn{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+#login .card,#conn .card{width:100%;max-width:360px;border:1px solid var(--rule);background:var(--panel);padding:26px 22px 22px}
+#login h1,#conn h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.08em}
+#login p,#conn p{margin:6px 0 18px;font-size:11px;letter-spacing:.1em;color:var(--dim)}
+#login p::before,#conn p::before{content:"// "}
+#login input,#conn input{width:100%;background:var(--bg);border:1px solid var(--rule);color:var(--text);font-size:20px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding:12px 14px;text-align:center}
+#login input::placeholder,#conn input::placeholder{color:var(--faint);letter-spacing:.18em}
+#login .go,#conn .go{width:100%;margin-top:10px;background:var(--a);color:#0E1112;border:0;font-weight:700;font-size:12px;letter-spacing:.12em;padding:12px;cursor:pointer}
+#login .go::before,#conn .go::before{content:"[ "}#login .go::after,#conn .go::after{content:" ]"}
+#login .err,#conn .err{min-height:18px;margin-top:10px;font-size:11.5px;color:var(--r);letter-spacing:.04em}
+
+/* ---- ticker + header ---- */
+.ticker{position:sticky;top:0;z-index:6;background:var(--panel);border-bottom:1px solid var(--rule);padding:9px 16px;font-size:11.5px;letter-spacing:.08em;color:var(--dim);white-space:nowrap;overflow-x:auto;scrollbar-width:none}
+.ticker::-webkit-scrollbar{display:none}
+.ticker b{font-weight:600;color:var(--text);margin-left:5px}
+.ticker .sep{margin:0 8px;color:var(--faint)}
+.ticker .x{color:var(--faint);margin-left:6px;font-weight:500}
+.wrap{max-width:940px;margin:0 auto;padding:0 0 80px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 16px 4px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.brand h1{margin:0;font-size:16px;font-weight:700;letter-spacing:.06em}
+.badge{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+.badge::before{content:"· "}
+.hbtns{display:flex;gap:12px}
+.tbtn{background:transparent;border:0;color:var(--dim);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;padding:6px 0;cursor:pointer}
+.tbtn::before{content:"["}.tbtn::after{content:"]"}
+.tbtn:hover{color:var(--text)}
+.fxnote{padding:0 16px 10px;font-size:10.5px;letter-spacing:.06em;color:var(--faint)}
+.fxnote::before{content:"// fx "}
+
+/* ---- tabs ---- */
+nav.tabs{position:sticky;top:33px;z-index:5;display:flex;gap:14px;background:var(--bg);padding:8px 16px 10px;border-bottom:1px solid var(--rule);overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{border:0;background:transparent;color:var(--dim);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:2px 0;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px}
+nav.tabs button::before{content:"["}nav.tabs button::after{content:"]"}
+nav.tabs button .cnt{color:var(--faint);font-size:11px}
+nav.tabs button[aria-selected="true"]{color:var(--text)}
+nav.tabs button[aria-selected="true"] .cnt{color:var(--a)}
+
+/* ---- toolbar / filters ---- */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px 2px;flex-wrap:wrap}
+.filters{display:flex;gap:12px;flex-wrap:wrap}
+.chip{background:transparent;border:0;border-bottom:1px solid transparent;color:var(--dim);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:2px 0;cursor:pointer}
+.chip[aria-pressed="true"]{color:var(--text);border-bottom-color:var(--a)}
+.cols{display:flex;justify-content:space-between;padding:8px 16px;margin-top:8px;font-size:10.5px;letter-spacing:.14em;color:var(--dim);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:var(--panel2)}
+
+/* ---- rows ---- */
+.list{display:flex;flex-direction:column}
+.row{border-bottom:1px solid var(--rule2)}
+.row.open{background:var(--panel2);border-left:2px solid var(--a)}
+.rhead{display:flex;align-items:center;gap:12px;padding:10px 16px;cursor:pointer}
+.rhead:hover{background:var(--panel2)}
+.who{flex:1;min-width:0}
+.who .nm{font-weight:600;font-size:13.5px;letter-spacing:.02em;text-transform:uppercase;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.who .meta{font-size:11px;color:var(--dim);margin-top:2px;letter-spacing:.02em;text-transform:lowercase}
+.pill{display:inline;font-size:11px;color:var(--dim);text-transform:lowercase}
+.pill+.pill::before{content:" · "}
+.amt{font-size:14.5px;font-weight:600;text-align:right;white-space:nowrap}
+.amt small{display:block;font-size:9.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;margin-top:1px;color:var(--faint)}
+.amt.pos{color:var(--g)}.amt.neg{color:var(--r)}.amt.zero{color:var(--faint)}
+.body{display:none;border-top:1px solid var(--rule2);padding:6px 16px 14px}
+.row.open .body{display:block}
+.seclab{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:8px 0 2px}
+.bk{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:12px 0 2px;padding-bottom:4px;border-bottom:1px solid var(--rule)}
+.bk .bn{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--a)}
+.bk .bn small{color:var(--dim);letter-spacing:.04em;text-transform:none;margin-left:6px}
+.bk .bv{font-size:13px;font-weight:600;white-space:nowrap}.bk .bv.pos{color:var(--g)}.bk .bv.neg{color:var(--r)}
+.bk .bv button{background:transparent;border:0;color:var(--dim);font:inherit;font-size:10px;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;margin-left:10px}
+.bk .bv button:hover{color:var(--text)}
+.tag.multi{color:var(--a)}
+
+/* ---- entries ---- */
+.entry{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--rule2)}
+.entry:last-child{border-bottom:0}
+.entry .ed{font-size:10.5px;color:var(--faint);width:62px;flex:none;padding-top:3px;letter-spacing:.02em}
+.entry .emid{flex:1;min-width:0}.entry .elabel{font-size:12.5px;color:var(--text)}
+.entry .enote{font-size:11px;color:var(--dim);margin-top:2px}
+.entry .enote::before{content:"// "}
+.entry .eright{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.entry .ea{font-size:13.5px;font-weight:600;white-space:nowrap}
+.entry .ea.pos{color:var(--g)}.entry .ea.neg{color:var(--r)}.entry .ea.zero{color:var(--faint)}
+.entry.paid .elabel,.entry.paid .ea{text-decoration:line-through;color:var(--faint)}
+.eact{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.ptag{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-left:8px}
+.settled-toggle{background:transparent;border:0;color:var(--dim);font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding:10px 0 4px}
+.settled-toggle:hover{color:var(--text)}
+.pnote{border:1px solid var(--rule);background:var(--panel);padding:9px 12px;margin:12px 0 2px;font-size:12px;color:var(--text)}
+.pnote .k{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+.pnote.empty{color:var(--faint);border-style:dashed}
+.flagline{color:var(--a);font-size:11.5px;margin-top:10px;letter-spacing:.02em}
+.rowacts{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+.note{font-size:11.5px;color:var(--dim);padding:10px 16px 4px}
+.note::before{content:"// "}
+
+/* ---- text buttons: [LABEL] ---- */
+.btn{background:transparent;border:0;color:var(--dim);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:4px 0;cursor:pointer;white-space:nowrap}
+.btn::before{content:"["}.btn::after{content:"]"}
+.btn:hover{color:var(--text)}
+.btn.primary{color:var(--a)}.btn.primary:hover{color:#F0C76A}
+.btn.danger{color:var(--r)}.btn.danger:hover{color:#F08C84}
+.btn.ok2{color:var(--g)}.btn.ok2:hover{color:#7FD09E}
+.addbtn{background:transparent;border:0;color:var(--a);font-size:11px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:10px 0 2px}
+.addbtn::before{content:"[+ "}.addbtn::after{content:"]"}
+
+/* ---- staking ---- */
+.stcard{border-bottom:1px solid var(--rule2);padding:12px 16px 14px}
+.stcard .top2{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.stcard .nm{font-weight:600;font-size:13.5px;letter-spacing:.02em;text-transform:uppercase}
+.mkbar{height:2px;background:var(--rule);margin:10px 0 10px;overflow:hidden}
+.mkbar>span{display:block;height:100%}
+.stgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.stgrid .k{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.stgrid .v{font-size:14px;font-weight:600}
+.tag{font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-left:10px;color:var(--dim)}
+.tag.live{color:var(--a)}.tag.online{color:var(--dim)}.tag.makeup{color:var(--r)}.tag.clear{color:var(--g)}
+.stcard .note{padding:8px 0 0}
+.stlog{margin-top:10px;border-top:1px solid var(--rule)}
+.sl{padding:8px 0;border-bottom:1px solid var(--rule2)}
+.sl .r1{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.sl .c{font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.02em}
+.sl .c small{font-weight:400;text-transform:none;color:var(--dim);font-size:10.5px;margin-left:6px}
+.sl .res{font-size:13px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sl .res.pos{color:var(--g)}.sl .res.neg{color:var(--r)}.sl .res.zero{color:var(--faint)}
+.sl .r2{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:4px;font-size:11px;color:var(--dim);flex-wrap:wrap;letter-spacing:.03em}
+.sl .r2 b{color:var(--text);font-weight:500}
+.sl input.pct{width:46px;background:var(--bg);border:1px solid var(--rule);color:var(--a);font:inherit;font-size:11.5px;padding:2px 4px;text-align:right;margin:0 2px 0 4px}
+.sl .a{display:flex;gap:12px}
+.sl .a button{background:transparent;border:0;color:var(--dim);font:inherit;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;padding:0}
+.sl .a button:hover{color:var(--text)}
+.sl.settled{opacity:.45}
+.sl.t{border-bottom:0;padding-top:9px}.sl.t .c{color:var(--dim)}
+.tag.cash{color:var(--a)}.tag.tourney{color:var(--a)}
+
+/* ---- loans / inbox ---- */
+.due{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--a);margin-left:8px}
+.inbox-note{padding:10px 16px 2px;font-size:11.5px;color:var(--dim)}
+.inbox-note::before{content:"// "}
+.inbox-note b{color:var(--text);font-weight:600}
+.iacts{display:flex;gap:16px;padding:0 16px 12px}
+.foot{margin:26px 16px 0;padding-top:12px;border-top:1px solid var(--rule);font-size:10.5px;color:var(--faint);letter-spacing:.04em;line-height:1.6}
+.foot::before{content:"// "}
+.foot b{color:var(--dim);font-weight:600}
+
+/* ---- clubs ---- */
+.cdeal{font-size:12px;color:var(--text);text-align:right;white-space:normal;max-width:44%}
+.cdeal small{display:block;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:1px}
+.crel{font-size:11px;color:var(--dim);margin-top:2px;letter-spacing:.02em}
+.cnote{font-size:11px;color:var(--dim);margin-top:4px}
+.cnote::before{content:"// "}
+
+.club .rhead{cursor:pointer}
+.cm{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px solid var(--rule2);cursor:pointer}
+.cm:last-child{border-bottom:0}.cm:hover .cmn{color:var(--a)}
+.cmn{font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.02em}
+.cmmeta{display:block;font-size:10.5px;color:var(--dim);font-weight:400;text-transform:lowercase;margin-top:1px;letter-spacing:.02em}
+.crake{margin:4px 0 10px;padding:10px 12px;border:1px solid var(--rule);background:var(--panel);font-size:11.5px;line-height:1.55;color:var(--text);white-space:pre-wrap;overflow-x:auto}
+.cm .ea{font-size:13px;font-weight:600;white-space:nowrap}
+.cm .ea.pos{color:var(--g)}.cm .ea.neg{color:var(--r)}.cm .ea.zero{color:var(--faint)}
+
+.nrow{display:flex;align-items:flex-start;gap:12px;padding:11px 16px;border-bottom:1px solid var(--rule2)}
+.nrow .ntext{flex:1;min-width:0;font-size:13px;line-height:1.5;white-space:pre-wrap;text-transform:none}
+.nrow .ndate{font-size:10.5px;color:var(--faint);white-space:nowrap;padding-top:3px;letter-spacing:.02em}
+.nrow.done .ntext{text-decoration:line-through;color:var(--faint)}
+.nrow .eact{margin-top:2px}
+
+/* ---- modal ---- */
+.modal{position:fixed;inset:0;background:rgba(8,10,10,.72);display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.sheet{background:var(--panel);width:100%;max-width:520px;border:1px solid var(--rule);max-height:92vh;overflow:auto}
+@media(min-width:560px){.modal{align-items:center}}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 2px}
+.sheet-h h3{margin:0;font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.sheet-h .x{border:0;background:transparent;font-size:18px;color:var(--dim);cursor:pointer}
+#m-form{padding:12px 18px;display:flex;flex-direction:column;gap:12px}
+.fld{display:flex;flex-direction:column;gap:5px}
+.fld label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.fld input,.fld select,.fld textarea{font-size:15px;color:var(--text);background:var(--bg);border:1px solid var(--rule);padding:10px 12px;width:100%}
+.fld textarea{min-height:64px;resize:vertical}
+.fld .hint{font-size:10.5px;color:var(--faint)}
+.fld .hint::before{content:"// "}
+.sheet-f{display:flex;gap:16px;justify-content:space-between;align-items:center;padding:10px 18px 18px;position:sticky;bottom:0;background:var(--panel);border-top:1px solid var(--rule)}
+.sheet-f .right{display:flex;gap:16px}
+.crow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--rule2)}
+.crow .ccode{font-size:15px;font-weight:700;letter-spacing:.12em}
+.crow .clabel{font-size:11px;color:var(--dim);margin-top:2px}
+.crow.rev .ccode{text-decoration:line-through;color:var(--faint)}
+#codes-body .note{padding:12px 18px}
+</style></head><body>
+
+<div id="login" hidden>
+  <div class="card">
+    <h1>PAUL'S BOOK</h1>
+    <p>access code</p>
+    <input id="code-in" maxlength="10" autocomplete="one-time-code" inputmode="text" placeholder="CODE" aria-label="Access code">
+    <button class="go" id="code-go">ENTER</button>
+    <div class="err" id="code-err"></div>
+  </div>
+</div>
+
+<div id="conn" hidden>
+  <div class="card">
+    <h1>PAUL'S BOOK</h1>
+    <p id="conn-msg">connecting&hellip;</p>
+    <button class="go" id="conn-retry">RETRY NOW</button>
+    <div class="err" style="color:var(--dim)">// your device is still remembered &mdash; no code needed</div>
+  </div>
+</div>
+
+<div id="app" hidden>
+<div class="ticker">
+  COLLECT<b id="t-collect" class="g">&mdash;</b><span class="x" id="t-collect-usd"></span>
+  <span class="sep">·</span>PAY<b id="t-pay" class="r">&mdash;</b><span class="x" id="t-pay-usd"></span>
+  <span class="sep">·</span>NET<b id="t-net">&mdash;</b>
+</div>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><h1>PAUL'S BOOK</h1><span class="badge" id="statebadge">Live</span></div>
+    <div class="hbtns">
+      <button class="tbtn" id="codes" hidden>Codes</button>
+      <button class="tbtn" id="logout" title="Log out">Exit</button>
+    </div>
+  </header>
+  <div class="fxnote">loading live rates&hellip;</div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-view="people">People <span class="cnt" id="c-people"></span></button>
+    <button role="tab" aria-selected="false" data-view="staking">Staking <span class="cnt" id="c-staking"></span></button>
+    <button role="tab" aria-selected="false" data-view="loans">Loans <span class="cnt" id="c-loans"></span></button>
+    <button role="tab" aria-selected="false" data-view="inbox">Inbox <span class="cnt" id="c-inbox"></span></button>
+    <button role="tab" aria-selected="false" data-view="clubs">Clubs <span class="cnt" id="c-clubs"></span></button>
+    <button role="tab" aria-selected="false" data-view="notes">Notes <span class="cnt" id="c-notes"></span></button>
+  </nav>
+  <section id="view-people">
+    <div class="toolbar"><div class="filters" id="pfilters"></div><div style="display:flex;gap:8px"><button class="btn" id="hide-zero" aria-pressed="false">Hide 0 balances</button><button class="btn primary" id="add-person">+ Add person</button></div></div>
+    <div class="cols"><span>NAME / PLATFORM · RB</span><span>BALANCE</span></div>
+    <div class="list" id="people"></div>
+  </section>
+  <section id="view-staking" class="hidden"><div class="toolbar"><span></span><button class="btn primary" id="add-horse">+ Add horse</button></div><div class="cols"><span>HORSE · TYPE</span><span>MAKEUP / SHARE</span></div><div class="list" id="staking"></div></section>
+  <section id="view-loans" class="hidden"><div class="toolbar"><span></span><button class="btn primary" id="add-loan">+ Add loan</button></div><div class="cols"><span>DEBTOR</span><span>OWED TO PAUL</span></div><div class="list" id="loans"></div></section>
+  <section id="view-inbox" class="hidden"><div class="inbox-note">proposed by the weekly RomanianClub run (Paul&rsquo;s sheet). <b>approve</b> posts it into the person&rsquo;s ledger (creating the person if new); <b>dismiss</b> drops it. + = they owe paul, − = paul owes.</div><div class="cols"><span>MEMBER / WEEK · TB</span><span>PROPOSED</span></div><div class="list" id="inbox"></div></section>
+  <section id="view-clubs" class="hidden"><div class="toolbar"><span class="note" style="padding:0">every club / site we play, have players in, or get a deal from</span><button class="btn primary" id="add-club">+ Add club</button></div><div class="cols"><span>CLUB / KIND · RELATIONSHIP</span><span>DEAL</span></div><div class="list" id="clubs"></div></section>
+  <section id="view-notes" class="hidden"><div class="toolbar"><span class="note" style="padding:0">general notes &amp; to-dos</span><button class="btn primary" id="add-note">+ Add note</button></div><div class="cols"><span>NOTE</span><span>ADDED</span></div><div class="list" id="notes"></div></section>
+  <div class="foot"><b>live &mdash; synced for everyone with a code.</b> tap a person to edit / delete / add entries, note any entry, note the person, mark entries <b>paid</b> or <b>settle balance</b>. settled items hide behind &ldquo;show settled&rdquo; and drop out of the totals.</div>
+</div>
+</div>
+
+<div class="modal hidden" id="modal" role="dialog" aria-modal="true"><div class="sheet">
+  <div class="sheet-h"><h3 id="m-title">Edit</h3><button class="x" id="m-x" aria-label="Close">&times;</button></div>
+  <form id="m-form"></form>
+  <div class="sheet-f"><button type="button" class="btn danger" id="m-del" style="display:none">Delete</button><div class="right"><button type="button" class="btn" id="m-cancel">Cancel</button><button type="button" class="btn primary" id="m-save">Save</button></div></div>
+</div></div>
+
+<div class="modal hidden" id="codesmodal" role="dialog" aria-modal="true"><div class="sheet">
+  <div class="sheet-h"><h3>Access codes</h3><button class="x" id="cm-x" aria-label="Close">&times;</button></div>
+  <div id="codes-body"></div>
+  <div class="sheet-f"><span></span><div class="right"><button type="button" class="btn primary" id="cm-new">+ Generate code</button></div></div>
+</div></div>
+
+<script>
+let FX={usd_ron:4.55, aed_ron:1.24, chf_ron:5.1, source:'fallback', updated:0};
+const $=id=>document.getElementById(id);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const f=n=>Math.round(n).toLocaleString('en-US');
+const money=(a,c)=>(a<0?'−':'')+f(Math.abs(a))+' '+c;
+const cls=v=>v>0?'pos':v<0?'neg':'zero';
+const dir=v=>v>0?'to collect':v<0?'to pay':'settled';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ask=msg=>{try{return window.confirm(msg);}catch(e){return true;}};
+const num=v=>{v=String(v).replace(/[,\s]/g,'').replace(/−/g,'-');return v===''?null:parseFloat(v);};
+const btn=(t,c)=>{const b=document.createElement('button');b.className=c;b.textContent=t;return b;};
+
+const SEED={people:[
+ {n:"PinkFloid",t:"Other",pl:["?"],cur:"RON",tx:[{label:"",amount:54533},{label:"",amount:35467}]},
+ {n:"Montana (Emir)",t:"Rakeback",pl:["RomanianClub"],cur:"RON",note:"Pays in Albania · left the club but still owes",tx:[{label:"",amount:32676},{label:"",amount:5495}]},
+ {n:"Paulinho",t:"Rakeback",pl:["RomanianClub","Carpatix"],cur:"RON",note:"Also staked at Raiciu (through Sorin)",tx:[{label:"RomClub",amount:13600},{label:"RomClub",amount:-3100},{label:"RomClub",amount:15475},{label:"Carpatix",amount:1167}]},
+ {n:"DaniParaschiv",t:"Other",pl:["?"],cur:"RON",tx:[{label:"",amount:10500,note:"from shovelini"}]},
+ {n:"Sorin",t:"Partner",pl:["RoyalRo"],cur:"RON",note:"Owns RoyalRo · insertcoin (Stars) moved under him · send 14,300 to Abrudan",tx:[{label:"",amount:-14300},{label:"",amount:70087},{label:"",amount:500}]},
+ {n:"spike (Bursuc)",t:"Rakeback",pl:["RomanianClub"],rb:"80%",cur:"RON",note:"sent 3,700 to Avram",tx:[{label:"",amount:5000}]},
+ {n:"Muflender",t:"Rakeback",pl:["RoyalRo","Dubai"],rb:"50%",cur:"RON",tx:[{label:"",amount:2790}]},
+ {n:"Lupuleac",t:"Other",pl:["?"],cur:"USD",tx:[{label:"",amount:1686}]},
+ {n:"GGALL",t:"Rakeback",pl:["RomanianClub"],cur:"RON",flag:"Reconciliation pending — still to collect 14,200 from Ivan",tx:[{label:"",amount:0}]},
+ {n:"Dexter",t:"Rakeback",pl:["RomanianClub"],cur:"RON",tx:[{label:"",amount:0}]},
+ {n:"Premium89",t:"Rakeback",pl:["RomanianClub"],rb:"80%",cur:"RON",note:"New super-agent (Matin Taleby)",tx:[{label:"",amount:0}]},
+ {n:"GOREGX",t:"Rake share",pl:["Abrudan"],cur:"RON",note:"10% of rake — amount TBD",tx:[{label:"",amount:0}]},
+ {n:"TYLLIND",t:"Rake share",pl:["Abrudan"],cur:"RON",note:"10% of rake — amount TBD",tx:[{label:"",amount:0}]},
+ {n:"Loren",t:"Other",pl:["?"],cur:"RON",flag:"To send in 1–2 days — direction to confirm",tx:[{label:"",amount:-11100}]},
+ {n:"Skybri",t:"Rakeback",pl:["RomanianClub"],cur:"RON",tx:[{label:"",amount:-5513},{label:"",amount:-1050}]},
+ {n:"Raiciu",t:"Partner",pl:["?"],cur:"RON",tx:[{label:"last wk",amount:-11883},{label:"",amount:5724},{label:"",amount:1800}]},
+ {n:"Avram Laurențiu",t:"Rakeback",pl:["RomanianClub"],rb:"70%",cur:"RON",note:"Pays tonight, cash",tx:[{label:"",amount:-6086}]},
+ {n:"ssRMN",t:"Rakeback",pl:["RomanianClub"],cur:"RON",tx:[{label:"",amount:-3930}]},
+ {n:"Cohiba",t:"Partner",pl:["RomanianClub"],cur:"USD",note:"SA group · Bluetooth8 moved super-agent",tx:[{label:"",amount:-15213}]}
+],staking:[
+ {n:"Paladin",mode:"online",split:"50 / 50",makeup:0,pnl:23589,cur:"RON",sub:"RomClub +1,349 · call-or-cry −1,200 · Carpatix +12,340 · loren1 +11,100"},
+ {n:"ketamin",mode:"online",split:"50 / 50",makeup:0,pnl:null,cur:"RON",sub:"“massive profit” — amount TBD"},
+ {n:"Cheloo",mode:"online",split:"50 / 50",makeup:2256,pnl:-2256,cur:"RON",sub:"in makeup"},
+ {n:"Cata",mode:"live",split:"50 / 50",makeup:6400,pnl:-6400,cur:"RON",sub:"Bankroll: Paul 50,000 + Cata 20,000 RON"},
+ {n:"Dubai (pool)",mode:"online",split:"Paul 80% · players 50%",makeup:0,pnl:1340,cur:"USD",sub:"1 chip = 0.5 AED · 2Highwins (dicu) +906 USD — PAID"}
+],loans:[
+ {n:"Veress",a:135913,c:"RON"},{n:"Sberea",a:15200,c:"RON"},{n:"Andrees Camion",a:13500,c:"RON"},
+ {n:"David Pacific",a:13500,c:"RON",due:"8 Oct"},{n:"Ascunde-le",a:12950,c:"RON"},
+ {n:"Dan Pincaru",a:6000,c:"RON"},{n:"Ana",a:5900,c:"USD"},{n:"David Duma",a:5000,c:"RON"}
+],inbox:[
+ {n:"Nemuncitorul",wk:"24–30 Aug",a:-12856,c:"RON",pl:"RomanianClub",rb:"50%"},
+ {n:"Avram Laurențiu",wk:"24–30 Aug",a:9256,c:"RON",pl:"RomanianClub",rb:"70%"},
+ {n:"Paulinho",wk:"24–30 Aug",a:4820,c:"RON",pl:"RomanianClub",rb:"70%"}
+],clubs:[
+ {n:"RomanianClub",kind:"ClubGG club",rel:"we manage · players · rakeback",deal:"per-member rakeback (managers report)",cur:"RON",auto:"automated",note:"ClubGG club 458886 · managers Veres / Paul / Abrudan · weekly numbers collected automatically"},
+ {n:"Carpatix",kind:"ClubGG club",rel:"players",deal:"—",cur:"RON",auto:"manual",note:"Paulinho, Paladin play here · spelled Carnatix in notes"},
+ {n:"RoyalRo",kind:"ClubGG club",rel:"players · rakeback",deal:"Muflender 50%",cur:"RON",auto:"manual",note:"owned by Sorin · aka Royal"},
+ {n:"Dubai",kind:"ClubGG club",rel:"players · Paul's share",deal:"players 50% · Paul 80%",cur:"AED",auto:"manual",note:"1 chip = 0.5 AED · Paul's share tracked in USD · 2Highwins (dicu)"}
+],notes:[
+ {text:"Viza america paul turist"},
+ {text:"Program/track net worth Paul"}
+]};
+
+function normalize(st){
+ st.people=st.people||[];st.staking=st.staking||[];st.loans=st.loans||[];st.inbox=st.inbox||[];
+ st.people.forEach(p=>{p.id=p.id||uid();p.pl=p.pl||[];p.cur=p.cur||"RON";p.tx=p.tx||[];p.tx.forEach(t=>t.id=t.id||uid());});
+ st.clubs=st.clubs||[];st.notes=st.notes||[];st.notes.forEach(n=>n.id=n.id||uid());st.staking.forEach(s=>{s.id=s.id||uid();(s.log||[]).forEach(l=>l.id=l.id||uid());(s.sites||[]).forEach(l=>l.id=l.id||uid());});st.loans.forEach(l=>l.id=l.id||uid());st.inbox.forEach(i=>i.id=i.id||uid());st.clubs.forEach(c=>c.id=c.id||uid());
+ return st;
+}
+
+/* ---------- auth + persistence ---------- */
+let TOKEN=null; try{TOKEN=localStorage.getItem('pb-token');}catch(e){}
+let state=null, base=0, isAdmin=false, saveTimer=null, refreshTimer=null;
+async function api(path,opts={}){
+ opts.headers=Object.assign({'content-type':'application/json'},opts.headers||{});
+ if(TOKEN)opts.headers['authorization']='Bearer '+TOKEN;
+ const r=await fetch(path,opts);
+ if(r.status===401){TOKEN=null;try{localStorage.removeItem('pb-token');}catch(e){}showLogin();throw new Error('unauthorized');}
+ if(!r.ok)throw new Error('http '+r.status);           // 5xx etc. -> caller retries, never the login screen
+ return r;
+}
+let bootTries=0;
+async function boot(){
+ if(!TOKEN){showLogin();return;}
+ try{await fetchState();bootTries=0;}
+ catch(e){
+  if(e&&e.message==='unauthorized')return;           // api() already showed the login screen
+  bootTries++;showConn(bootTries,e);                   // network/server hiccup: keep the token, retry
+  console.error('boot failed',e);
+  setTimeout(boot,Math.min(15000,1500*bootTries));
+ }
+}
+function showConn(n,e){$('app').hidden=true;$('login').hidden=true;$('conn').hidden=false;
+ const net=!e||e instanceof TypeError||/^http /.test(e.message||'');
+ $('conn-msg').textContent=(net?'could not reach the server ':'app error: '+(e&&e.message||'unknown')+' ')+(n>1?'(attempt '+n+') ':'')+'— retrying…';}
+$('conn-retry').onclick=()=>{bootTries=0;boot();};
+async function fetchState(){
+ const r=await api('/api/state');const d=await r.json();
+ isAdmin=!!(d.me&&d.me.admin);
+ if(d.state){state=normalize(d.state);base=d.updated;}
+ else{state=normalize(JSON.parse(JSON.stringify(SEED)));base=0;await pushState();}
+ $('login').hidden=true;$('conn').hidden=true;$('app').hidden=false;
+ $('codes').hidden=!isAdmin;
+ renderAll();
+ loadFx();
+}
+async function pushState(){
+ const r=await fetch('/api/state',{method:'PUT',headers:{'content-type':'application/json','authorization':'Bearer '+TOKEN},body:JSON.stringify({state,base})});
+ if(r.status===409){const d=await r.json();state=normalize(d.state);base=d.updated;renderAll();
+   badge('reloaded — someone else edited');return;}
+ if(r.ok){const d=await r.json();base=d.updated;badge('saved');}
+}
+function save(){badge('saving…');clearTimeout(saveTimer);saveTimer=setTimeout(pushState,500);}
+function badge(txt){const b=$('statebadge');if(!b)return;b.textContent=txt;clearTimeout(b._t);b._t=setTimeout(()=>b.textContent='Live',1600);}
+async function refresh(){
+ if(!TOKEN||!state)return;if(!$('modal').classList.contains('hidden'))return;if(saveTimer)return;
+ try{const r=await api('/api/state');const d=await r.json();if(d.updated&&d.updated!==base){state=normalize(d.state);base=d.updated;renderAll();}}catch(e){}
+}
+
+/* ---------- login ---------- */
+function showLogin(){$('app').hidden=true;$('conn').hidden=true;$('login').hidden=false;setTimeout(()=>$('code-in').focus(),50);}
+async function doLogin(){
+ const code=$('code-in').value.trim().toUpperCase();if(!code){return;}
+ $('code-err').textContent='';
+ try{
+  const r=await fetch('/api/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({code})});
+  if(!r.ok){$('code-err').textContent='// that code is not valid';return;}
+  const d=await r.json();TOKEN=d.token;try{localStorage.setItem('pb-token',TOKEN);}catch(e){}
+  await fetchState();
+ }catch(e){$('code-err').textContent='// could not connect — try again';}
+}
+$('code-go').onclick=doLogin;
+$('code-in').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+$('logout').onclick=()=>{TOKEN=null;try{localStorage.removeItem('pb-token');}catch(e){}state=null;showLogin();};
+
+/* ---------- totals ---------- */
+const bal=p=>(p.tx||[]).reduce((s,t)=>s+(t.paid?0:(+t.amount||0)),0);
+const bucketOf=t=>String(t.bucket||'').trim()||'main';
+function buckets(p){const m=new Map();(p.tx||[]).forEach(t=>{if(t.paid)return;const k=bucketOf(t);if(!m.has(k))m.set(k,{name:k,tx:[],sum:0});const b=m.get(k);b.tx.push(t);b.sum+=(+t.amount||0);});
+ return [...m.values()].sort((a,b)=>a.name==='main'?-1:b.name==='main'?1:a.name.localeCompare(b.name));}
+function totals(){
+ const col={RON:0,USD:0,AED:0,CHF:0,EUR:0}, pay={RON:0,USD:0,AED:0,CHF:0,EUR:0};
+ const add=(v,c)=>{c=(c==="USD"||c==="AED"||c==="CHF"||c==="EUR")?c:"RON";
+   if(v>0)col[c]+=v; else if(v<0)pay[c]+=-v;};
+ state.people.forEach(p=>add(bal(p),p.cur));
+ state.loans.forEach(l=>{if(!l.paid)add((l.dir==='Paul owes'?-1:1)*(+l.a||0),l.c);});
+ const extra=o=>{const p=[];for(const k of ["USD","AED","CHF"])if(o[k])p.push("+"+money(o[k],k));return p.join(" ");};
+ $('t-collect').textContent=money(col.RON,"RON"); $('t-collect-usd').textContent=extra(col);
+ $('t-pay').textContent=money(pay.RON,"RON");     $('t-pay-usd').textContent=extra(pay);
+ const net=(col.RON-pay.RON)+(col.USD-pay.USD)*FX.usd_ron+(col.AED-pay.AED)*FX.aed_ron+(col.CHF-pay.CHF)*(FX.chf_ron||5.1)+(col.EUR-pay.EUR)*(FX.eur_ron||5.25);
+ const tn=$('t-net');tn.textContent=(net>0?'+':'')+money(net,"RON");tn.className=net<0?'r':'g';
+}
+async function loadFx(){
+ try{
+  const r=await (await api('/api/fx')).json();
+  if(r&&r.usd_ron){
+   FX=r;
+   const when=r.updated?new Date(r.updated).toLocaleDateString(undefined,{day:'numeric',month:'short'}):'';
+   const el=document.querySelector('.fxnote');
+   if(el) el.textContent=`usd ${(+r.usd_ron).toFixed(4)} · aed ${(+r.aed_ron).toFixed(4)} · dxb chip ${(0.5*r.aed_ron).toFixed(4)}${r.chf_ron?` · chf ${(+r.chf_ron).toFixed(4)}`:''}`
+     + (r.fallback?' · offline fallback':` · live${when?' '+when.toLowerCase():''}`);
+   totals();
+  }
+ }catch(e){ /* keep fallback rates */ }
+}
+
+/* ---------- people ---------- */
+const TYPES=["All","Rakeback","Partner","Rake share","Other"];
+let filter="All", openId=null, openClubId=null, notesShowDone=false;const openLoanGroups=new Set();const showSettled=new Set();let loansShowSettled=false;
+function buildFilters(){const pf=$('pfilters');pf.innerHTML='';TYPES.forEach(t=>{const b=document.createElement('button');b.className='chip';b.textContent=t;b.setAttribute('aria-pressed',t===filter);b.onclick=()=>{filter=t;buildFilters();renderPeople();};pf.appendChild(b);});}
+let hideZero=false;try{hideZero=localStorage.getItem('pb-hide-zero')==='1';}catch(e){}
+function renderPeople(){
+ const host=$('people');host.innerHTML='';
+ const hz=$('hide-zero');if(hz){hz.textContent=hideZero?'Show 0 balances':'Hide 0 balances';hz.setAttribute('aria-pressed',hideZero);}
+ const all=state.people.filter(p=>filter==="All"||p.t===filter);const hidden=hideZero?all.filter(p=>bal(p)===0&&p.id!==openId).length:0;
+ all.filter(p=>!(hideZero&&bal(p)===0&&p.id!==openId)).sort((a,b)=>bal(b)-bal(a)).forEach(p=>{
+  const v=bal(p);const row=document.createElement('div');row.className='row'+(p.id===openId?' open':'');
+  const meta=[p.t].concat(p.pl||[]).concat(p.rb?[p.rb+' rb']:[]).map(esc).join(' · ');
+  const bks=buckets(p);const multi=bks.length>1;
+  row.innerHTML=`<div class="rhead" tabindex="0" role="button"><div class="who"><div class="nm">${esc(p.n)}${multi?`<span class="tag multi">${bks.length} debts</span>`:''}</div><div class="meta">${meta}${multi?' · '+bks.map(b=>esc(b.name)+' '+(b.sum>0?'+':'')+f(b.sum)).join(' · '):''}</div></div><div class="amt ${cls(v)}">${v>0?'+':''}${money(v,p.cur)}<small>${multi?'total · ':''}${dir(v)}</small></div></div><div class="body"></div>`;
+  const head=row.querySelector('.rhead');const toggle=()=>{openId=(openId===p.id?null:p.id);renderPeople();};
+  head.onclick=toggle;head.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}};
+  if(p.id===openId)fillPersonBody(row.querySelector('.body'),p);host.appendChild(row);
+ });
+ if(hidden){const n=document.createElement('div');n.className='note';n.style.padding='10px 16px';n.textContent=hidden+' settled '+(hidden===1?'person':'people')+' hidden (balance 0)';host.appendChild(n);}
+}
+function mkEntry(p,t,isPaid){
+ const e=document.createElement('div');e.className='entry'+(isPaid?' paid':'');const a=+t.amount||0;
+ e.innerHTML=`<div class="ed">${esc(t.date||'')}</div><div class="emid"><div class="elabel">${esc(t.label||'—')}${bucketOf(t)!=='main'?`<span class="ptag" style="color:var(--a)">${esc(bucketOf(t))}</span>`:''}${isPaid?'<span class="ptag">paid</span>':''}</div>${t.note?`<div class="enote">${esc(t.note)}</div>`:''}</div><div class="eright"><div class="ea ${cls(a)}">${a>0?'+':a<0?'−':''}${f(Math.abs(a))}</div><div class="eact"></div></div>`;
+ const acts=e.querySelector('.eact');
+ if(!isPaid){const bp=btn('Paid','btn ok2');bp.onclick=()=>{t.paid=true;save();renderPeople();totals();};const be=btn('Edit','btn');be.onclick=()=>editEntry(p,t);const bd=btn('Del','btn danger');bd.onclick=()=>{p.tx=p.tx.filter(x=>x!==t);save();renderPeople();totals();};acts.append(bp,be,bd);}
+ else{const bu=btn('Unpay','btn');bu.onclick=()=>{t.paid=false;save();renderPeople();totals();};const bd=btn('Del','btn danger');bd.onclick=()=>{p.tx=p.tx.filter(x=>x!==t);save();renderPeople();totals();};acts.append(bu,bd);}
+ return e;
+}
+function fillPersonBody(box,p){
+ box.innerHTML='';const open=(p.tx||[]).filter(t=>!t.paid),settled=(p.tx||[]).filter(t=>t.paid);
+ const bks=buckets(p);
+ if(bks.length>1){
+  bks.forEach(b=>{const h=document.createElement('div');h.className='bk';
+   h.innerHTML=`<span class="bn">${esc(b.name)}<small>${b.tx.length} entr${b.tx.length===1?'y':'ies'}</small></span><span class="bv ${cls(b.sum)}">${b.sum>0?'+':''}${money(b.sum,p.cur)}</span>`;
+   const sb=btn('settle this','');sb.onclick=()=>{if(ask('Mark the '+b.tx.length+' open entr'+(b.tx.length===1?'y':'ies')+' of "'+b.name+'" as paid for '+p.n+'?')){b.tx.forEach(t=>t.paid=true);save();renderAll();}};h.querySelector('.bv').appendChild(sb);
+   box.appendChild(h);b.tx.forEach(t=>box.appendChild(mkEntry(p,t,false)));});
+  const tl=document.createElement('div');tl.className='bk';tl.innerHTML=`<span class="bn">total<small>all debts</small></span><span class="bv ${cls(bal(p))}">${bal(p)>0?'+':''}${money(bal(p),p.cur)}</span>`;box.appendChild(tl);
+ }else{
+  const lab=document.createElement('div');lab.className='seclab';lab.textContent='Entries';box.appendChild(lab);
+  if(open.length)open.forEach(t=>box.appendChild(mkEntry(p,t,false)));
+  else{const n=document.createElement('div');n.className='note';n.style.padding='8px 0 4px';n.textContent='no open entries — nothing outstanding';box.appendChild(n);}
+ }
+ if(settled.length){const shown=showSettled.has(p.id);const tg=document.createElement('button');tg.className='settled-toggle';tg.textContent=(shown?'▾ hide ':'▸ show ')+settled.length+' settled';tg.onclick=()=>{shown?showSettled.delete(p.id):showSettled.add(p.id);renderPeople();};box.appendChild(tg);if(shown)settled.forEach(t=>box.appendChild(mkEntry(p,t,true)));}
+ const add=btn('Add entry','addbtn');add.onclick=()=>editEntry(p,null);box.appendChild(add);
+ const note=document.createElement('div');note.className='pnote'+(p.note?'':' empty');note.innerHTML=p.note?`<div class="k">note · ${esc(p.n)}</div>${esc(p.note)}`:'// no note on this person yet';box.appendChild(note);
+ if(p.flag){const fl=document.createElement('div');fl.className='flagline';fl.textContent='! '+p.flag;box.appendChild(fl);}
+ const acts=document.createElement('div');acts.className='rowacts';
+ const ep=btn('Edit person & note','btn');ep.onclick=()=>editPerson(p);acts.appendChild(ep);
+ if(open.length){const bs=btn('Settle balance','btn ok2');bs.onclick=()=>{if(ask('Mark all '+open.length+' open entries as paid for '+p.n+'?')){open.forEach(t=>t.paid=true);save();renderAll();}};acts.appendChild(bs);}
+ const dp=btn('Delete person','btn danger');dp.onclick=()=>{if(ask('Delete '+p.n+'?')){state.people=state.people.filter(x=>x!==p);openId=null;save();renderAll();}};acts.appendChild(dp);
+ box.appendChild(acts);
+}
+/* staking maths: every horse nets out in RON.
+   cash   : weekly lines per account x club -> result = P&L + rake x rb%  (x rate to RON)
+   tourney: one balance per site -> net = sum(balances in RON) - bankroll staked
+   live   : generic card (makeup / P&L typed by hand) until we know more */
+const fmt2=n=>(n<0?'−':'')+Math.abs(+n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const horseKind=s=>s.kind||(s.mode==='live'?'live':'legacy');
+const horsePct=s=>{const m=String(s.split||'').match(/(\d+)\D+(\d+)/);return m?+m[2]:50;};   // "paul / horse"
+const CHIP={dxb:{cur:'aed',per:0.5}};   // club chips: DXB (Dubai) = 0.5 AED
+const fxRate=cur=>{const c=String(cur||'').toLowerCase();if(CHIP[c])return CHIP[c].per*(+FX[CHIP[c].cur+'_ron']||1);return +FX[c+'_ron']||1;};
+const toRon=(v,cur,rate)=>(!cur||cur==='RON')?+v||0:(+v||0)*(+rate||fxRate(cur));
+const lineRate=l=>(!l.cur||l.cur==='RON')?1:(+l.rate||fxRate(l.cur));
+const lineNative=l=>(+l.pnl||0)+(+l.rake||0)*(+l.pct||0)/100;
+const lineRon=l=>lineNative(l)*lineRate(l);
+function horseNet(s){const k=horseKind(s);
+ if(k==='cash')return (s.log||[]).filter(l=>!l.settled).reduce((a,l)=>a+lineRon(l),0);
+ if(k==='tourney')return (s.sites||[]).reduce((a,x)=>a+toRon(x.bal,x.cur,x.rate),0)-(+s.invested||0);
+ return null;}
+const stShowSettled=new Set();
+function renderStaking(){
+ const host=$('staking');host.innerHTML='';
+ if(!state.staking.length){const n=document.createElement('div');n.className='note';n.textContent='no horses yet';host.appendChild(n);}
+ state.staking.forEach(s=>{
+  const k=horseKind(s), computed=(k==='cash'||k==='tourney'), net=computed?horseNet(s):null;
+  const inMk=computed?net<0:(+s.makeup||0)>0;
+  const hp=horsePct(s);
+  const mkLeft=computed?-net:(+s.makeup||0), cur=computed?'RON':s.cur;
+  const shareTxt=computed?money(net>0?net*hp/100:0,'RON'):(s.pnl==null?'TBD':money(inMk?0:(+s.pnl/2),s.cur));
+  const kindLbl={cash:'online cash',tourney:'tournaments',live:'live',legacy:esc(s.mode||'')}[k];
+  const card=document.createElement('div');card.className='stcard';
+  const tag=`<span class="tag ${k==='live'?'live':k==='legacy'?'online':k}">${kindLbl}</span>`+(inMk?`<span class="tag makeup">in makeup</span>`:`<span class="tag clear">clear</span>`);
+  card.innerHTML=`<div class="top2"><div class="nm">${esc(s.n)}</div><div>${tag}</div></div><div class="mkbar"><span style="width:100%;background:${inMk?'var(--r)':'var(--g)'}"></span></div>
+   <div class="stgrid"><div><div class="k">Split (paul / horse)</div><div class="v">${esc(s.split||'—')}</div></div><div><div class="k">${inMk?'Makeup left':'Horse&rsquo;s share'}</div><div class="v ${inMk?'r':'g'}">${inMk?money(mkLeft,cur):shareTxt}</div></div>
+   ${computed?`<div><div class="k">${k==='tourney'?'Net vs bankroll':'Period net'} <span style="text-transform:none;letter-spacing:0">(after rakeback, RON)</span></div><div class="v ${net<0?'r':net>0?'g':''}">${money(net,'RON')}</div></div><div><div class="k">Paul&rsquo;s share</div><div class="v">${money(net>0?net*(100-hp)/100:0,'RON')}</div></div>`:''}</div>
+   ${s.sub?`<div class="note">${esc(s.sub)}</div>`:''}<div class="stlog"></div><div class="rowacts"></div>`;
+  const box=card.querySelector('.stlog'), acts=card.querySelector('.rowacts');
+  if(k==='cash'){
+   const open=(s.log||[]).filter(l=>!l.settled), done=(s.log||[]).filter(l=>l.settled);
+   const mk=l=>{const r=document.createElement('div');r.className='sl'+(l.settled?' settled':'');const v=lineRon(l),rate=lineRate(l),fx=l.cur&&l.cur!=='RON';
+    r.innerHTML=`<div class="r1"><span class="c">${esc(l.acct?l.acct+' @ ':'')}${esc(l.club)}<small>${esc(l.wk||'')}${l.note?' · '+esc(l.note):''}</small></span><span class="res ${cls(v)}">${v>0?'+':''}${fmt2(v)}</span></div>
+     <div class="r2"><span>p&amp;l <b>${(+l.pnl>0?'+':'')}${fmt2(l.pnl)}</b> · rake <b>${fmt2(l.rake)}</b> · rb <input class="pct" inputmode="decimal" value="${esc(l.pct)}" aria-label="rakeback %">%${fx?` · <b>${esc(l.cur)}</b> @ ${rate.toFixed(4)} = ${fmt2(lineNative(l))} ${esc(l.cur)}`:''}</span><span class="a"></span></div>`;
+    const inp=r.querySelector('input.pct');inp.onchange=()=>{const pc=num(inp.value);if(pc==null||pc<0||pc>100){inp.value=l.pct;return;}l.pct=pc;save();renderStaking();};
+    const a=r.querySelector('.a');const be=btn('Edit','');be.onclick=()=>editLine(s,l);a.appendChild(be);const bx=btn('Del','');bx.onclick=()=>{if(ask('Delete this line?')){s.log=s.log.filter(x=>x!==l);save();renderStaking();}};a.appendChild(bx);return r;};
+   open.forEach(l=>box.appendChild(mk(l)));
+   if(open.length){const t=document.createElement('div');t.className='sl t';t.innerHTML=`<div class="r1"><span class="c">period net · ${open.length} line${open.length>1?'s':''}</span><span class="res ${cls(net)}">${net>0?'+':''}${fmt2(net)} RON</span></div>`;box.appendChild(t);}
+   else if(!done.length){const n=document.createElement('div');n.className='note';n.textContent='no week lines yet — add one per account × club';box.appendChild(n);}
+   if(done.length){const tg=document.createElement('button');tg.className='settled-toggle';tg.textContent=(stShowSettled.has(s.id)?'▾ hide ':'▸ show ')+done.length+' paid-out line'+(done.length>1?'s':'');tg.onclick=()=>{stShowSettled.has(s.id)?stShowSettled.delete(s.id):stShowSettled.add(s.id);renderStaking();};box.appendChild(tg);if(stShowSettled.has(s.id))done.forEach(l=>box.appendChild(mk(l)));}
+   const b1=btn('+ Week line','btn primary');b1.onclick=()=>editLine(s,null);acts.appendChild(b1);
+   if(net>0){const bp=btn('Paid out · reset','btn ok2');bp.onclick=()=>{if(ask('Mark this period paid out? The lines stay as history and '+s.n+' restarts at 0.')){s.log.forEach(l=>{if(!l.settled){l.settled=true;l.settledOn=Date.now();}});save();renderStaking();}};acts.appendChild(bp);}
+  }else if(k==='tourney'){
+   const sites=s.sites||[];
+   const mk=x=>{const r=document.createElement('div');r.className='sl';const v=toRon(x.bal,x.cur,x.rate),fx=x.cur&&x.cur!=='RON';
+    r.innerHTML=`<div class="r1"><span class="c">${esc(x.site)}<small>${x.note?esc(x.note):''}</small></span><span class="res ${cls(v)}">${fmt2(v)} RON</span></div><div class="r2"><span>balance <b>${fmt2(x.bal)} ${esc(x.cur||'RON')}</b>${fx?` @ ${(+x.rate||fxRate(x.cur)).toFixed(4)}`:''}</span><span class="a"></span></div>`;
+    const a=r.querySelector('.a');const be=btn('Edit','');be.onclick=()=>editSite(s,x);a.appendChild(be);const bx=btn('Del','');bx.onclick=()=>{if(ask('Remove '+x.site+'?')){s.sites=s.sites.filter(y=>y!==x);save();renderStaking();}};a.appendChild(bx);return r;};
+   sites.forEach(x=>box.appendChild(mk(x)));
+   const tot=sites.reduce((a,x)=>a+toRon(x.bal,x.cur,x.rate),0);
+   const t=document.createElement('div');t.className='sl t';t.innerHTML=`<div class="r1"><span class="c">balances ${fmt2(tot)} − staked ${fmt2(s.invested||0)}</span><span class="res ${cls(net)}">${net>0?'+':''}${fmt2(net)} RON</span></div>`;box.appendChild(t);
+   if(!sites.length){const n=document.createElement('div');n.className='note';n.textContent='no sites yet — add each platform with its current balance';box.appendChild(n);}
+   const b1=btn('+ Site','btn primary');b1.onclick=()=>editSite(s,null);acts.appendChild(b1);
+  }
+  const be=btn('Edit','btn');be.onclick=()=>editHorse(s);acts.appendChild(be);
+  const bd=btn('Delete','btn danger');bd.onclick=()=>{if(ask('Delete '+s.n+'?')){state.staking=state.staking.filter(x=>x!==s);save();renderStaking();updateCounts();}};acts.appendChild(bd);
+  host.appendChild(card);});
+}
+function mkLoan(l,isPaid){
+ const row=document.createElement('div');row.className='row'+(isPaid?' settled':'');
+ row.innerHTML=`<div class="rhead" style="cursor:default"><div class="who"><div class="nm">${esc(l.n)}${l.due&&!isPaid?`<span class="due">due ${esc(l.due)}</span>`:''}${isPaid?'<span class="ptag">paid</span>':''}</div><div class="meta">loan${l.note?' · '+esc(l.note):''}</div></div><div class="amt ${isPaid?'zero':(l.dir==='Paul owes'?'neg':'pos')}">${isPaid?'':(l.dir==='Paul owes'?'−':'+')}${money(+l.a||0,l.c)}<small>${isPaid?'settled':(l.dir==='Paul owes'?'paul owes':'owed to paul')}</small></div><div class="eact" style="margin-left:6px"></div></div>`;
+ const acts=row.querySelector('.eact');const be=btn('Edit','btn');be.onclick=()=>editLoan(l);acts.appendChild(be);
+ if(!isPaid){const bp=btn('Paid','btn ok2');bp.onclick=()=>{l.paid=true;save();renderLoans();totals();};acts.appendChild(bp);}else{const bu=btn('Unpay','btn');bu.onclick=()=>{l.paid=false;save();renderLoans();totals();};acts.appendChild(bu);}
+ return row;
+}
+function renderLoans(){
+ const host=$('loans');host.innerHTML='';const open=state.loans.filter(l=>!l.paid),paid=state.loans.filter(l=>l.paid);
+ // several open loans to the same debtor -> one row "N loans" with the total; tap to see each loan
+ const groups=new Map();open.forEach(l=>{const k=normKey(l.n);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(l);});
+ const rows=[];groups.forEach(ls=>rows.push(ls));rows.sort((a,b)=>b.reduce((x,l)=>x+(+l.a||0),0)-a.reduce((x,l)=>x+(+l.a||0),0));
+ rows.forEach(ls=>{
+  if(ls.length===1){host.appendChild(mkLoan(ls[0],false));return;}
+  const tot=ls.reduce((x,l)=>x+(l.dir==='Paul owes'?-1:1)*(+l.a||0),0), cur=ls[0].c, k=normKey(ls[0].n), isOpen=openLoanGroups.has(k);
+  const g=document.createElement('div');g.className='row'+(isOpen?' open':'');
+  g.innerHTML=`<div class="rhead" tabindex="0" role="button"><div class="who"><div class="nm">${esc(ls[0].n)}<span class="tag multi">${ls.length} loans</span></div><div class="meta">${ls.map(l=>(l.note?esc(l.note.split('·')[0].trim()):'loan')+' +'+f(+l.a||0)).join(' · ')}</div></div><div class="amt ${tot<0?'neg':'pos'}">${tot<0?'−':'+'}${money(Math.abs(tot),cur)}<small>total · ${tot<0?'paul owes':'owed to paul'}</small></div></div><div class="body"></div>`;
+  const head=g.querySelector('.rhead');const toggle=()=>{isOpen?openLoanGroups.delete(k):openLoanGroups.add(k);renderLoans();};
+  head.onclick=toggle;head.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}};
+  if(isOpen){const box=g.querySelector('.body');const lab=document.createElement('div');lab.className='seclab';lab.textContent='each loan';box.appendChild(lab);ls.forEach(l=>{const r=mkLoan(l,false);r.style.borderBottom='1px solid var(--rule2)';box.appendChild(r);});}
+  host.appendChild(g);});
+ if(!open.length){const n=document.createElement('div');n.className='note';n.textContent='no open loans';host.appendChild(n);}
+ if(paid.length){const tg=document.createElement('button');tg.className='settled-toggle';tg.style.padding='10px 16px 4px';tg.textContent=(loansShowSettled?'▾ hide ':'▸ show ')+paid.length+' settled';tg.onclick=()=>{loansShowSettled=!loansShowSettled;renderLoans();};host.appendChild(tg);if(loansShowSettled)paid.forEach(l=>host.appendChild(mkLoan(l,true)));}
+}
+function renderInbox(){
+ const host=$('inbox');host.innerHTML='';
+ const nk=x=>String(x||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+ if(!state.inbox.length){const n=document.createElement('div');n.className='note';n.textContent='inbox empty — nothing proposed';host.appendChild(n);}
+ state.inbox.forEach(x=>{const row=document.createElement('div');row.className='row';
+  const known=state.people.some(pp=>(x.pid&&pp.id===x.pid)||nk(pp.n)===nk(x.n));
+  row.innerHTML=`<div class="rhead" style="cursor:default"><div class="who"><div class="nm">${esc(x.n)}${known?'':'<span class="tag live">new person</span>'}</div><div class="meta">${esc(x.pl)} · ${esc(x.wk)} · ${esc(x.rb)} tb${x.src?' · '+esc(x.src):''}</div>${x.detail?`<div class="cnote">${esc(x.detail)}</div>`:''}</div><div class="amt ${cls(+x.a)}">${(+x.a)>0?'+':''}${money(+x.a,x.c)}<small>${(+x.a)>0?'they owe paul':(+x.a)<0?'paul owes':'flat'}</small></div></div><div class="iacts"><button class="btn primary">Approve &amp; post</button><button class="btn">Dismiss</button></div>`;
+  const[ok,no]=row.querySelectorAll('.iacts button');
+  ok.onclick=()=>{let p=state.people.find(pp=>x.pid&&pp.id===x.pid)||state.people.find(pp=>nk(pp.n)===nk(x.n));
+    if(!p){p={id:uid(),n:x.n,t:'Rakeback',pl:[x.pl||'RomanianClub'],rb:x.rb||'',cur:x.c||'RON',note:'created from weekly inbox',tx:[]};state.people.unshift(p);}
+    p.tx.push({id:uid(),date:x.wk,label:x.pl,amount:+x.a,note:'weekly settlement · '+x.rb+' tb'+(x.detail?' · '+x.detail:'')});
+    state.inbox=state.inbox.filter(i=>i!==x);save();renderAll();};
+  no.onclick=()=>{state.inbox=state.inbox.filter(i=>i!==x);save();renderInbox();updateCounts();};host.appendChild(row);});
+}
+
+const normKey=x=>String(x||'').toLowerCase().replace(/[^a-z0-9]/g,'');
+function membersAt(c){const b=normKey(c.n);return state.people.filter(p=>(p.pl||[]).some(x=>{const a=normKey(x);return a&&b&&(a.includes(b)||b.includes(a)||(b==='romanianclub'&&a==='romclub')||(b==='royalro'&&a==='royal'));}));}
+function renderClubs(){
+ const host=$('clubs');host.innerHTML='';
+ if(!state.clubs.length){const n=document.createElement('div');n.className='note';n.textContent='no clubs yet';host.appendChild(n);}
+ state.clubs.forEach(c=>{const row=document.createElement('div');row.className='row club'+(c.id===openClubId?' open':'');
+  const mem=membersAt(c).sort((a,b)=>bal(b)-bal(a));
+  row.innerHTML=`<div class="rhead" tabindex="0" role="button"><div class="who"><div class="nm">${esc(c.n)}${c.auto==='automated'?'<span class="tag live">auto</span>':''}</div><div class="meta">${esc(c.kind||'')}${c.rel?' · '+esc(c.rel):''} · ${mem.length} ${mem.length===1?'person':'people'}</div>${c.note?`<div class="cnote">${esc(c.note)}</div>`:''}</div><div class="cdeal">${esc(c.deal||'—')}<small>${esc(c.cur||'')}</small></div><div class="eact" style="margin-left:6px"></div></div><div class="body"></div>`;
+  const head=row.querySelector('.rhead');const toggle=()=>{openClubId=(openClubId===c.id?null:c.id);renderClubs();};
+  head.onclick=toggle;head.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}};
+  const acts=row.querySelector('.eact');const be=btn('Edit','btn');be.onclick=e=>{e.stopPropagation();editClub(c);};acts.appendChild(be);
+  const bd=btn('Del','btn danger');bd.onclick=e=>{e.stopPropagation();if(ask('Delete club '+c.n+'?')){state.clubs=state.clubs.filter(x=>x!==c);save();renderClubs();updateCounts();}};acts.appendChild(bd);
+  if(c.id===openClubId){const box=row.querySelector('.body');
+   const lab=document.createElement('div');lab.className='seclab';lab.textContent='members here · '+mem.length;box.appendChild(lab);
+   if(!mem.length){const n=document.createElement('div');n.className='note';n.style.padding='8px 0 4px';n.textContent='nobody on the list is tagged with this club yet — set it in a person\'s platforms';box.appendChild(n);}
+   mem.forEach(p=>{const v=bal(p);const m=document.createElement('div');m.className='cm';
+    m.innerHTML=`<div class="cmn">${esc(p.n)}<span class="cmmeta">${esc(p.t)}${p.rb?' · '+esc(p.rb)+' rb':''}${(p.pl||[]).length>1?' · also '+esc((p.pl||[]).filter(x=>normKey(x)!==normKey(c.n)).join(', ')):''}</span></div><div class="ea ${cls(v)}">${v>0?'+':''}${money(v,p.cur)}</div>`;
+    m.onclick=()=>{filter="All";openId=p.id;showTab('people');renderAll();};
+    box.appendChild(m);});}
+  host.appendChild(row);});
+}
+
+function renderNotes(){
+ const host=$('notes');host.innerHTML='';
+ const fmtD=ts=>ts?new Date(ts).toLocaleDateString(undefined,{day:'numeric',month:'short'}).toLowerCase():'';
+ const open=state.notes.filter(n=>!n.done),done=state.notes.filter(n=>n.done);
+ const mk=(n,isDone)=>{const r=document.createElement('div');r.className='nrow'+(isDone?' done':'');
+  r.innerHTML=`<div class="ntext">${esc(n.text||'')}</div><div class="ndate">${fmtD(n.created)}</div><div class="eact"></div>`;
+  const a=r.querySelector('.eact');
+  if(!isDone){const bd=btn('Done','btn ok2');bd.onclick=()=>{n.done=true;save();renderNotes();};a.appendChild(bd);}
+  else{const bu=btn('Reopen','btn');bu.onclick=()=>{n.done=false;save();renderNotes();};a.appendChild(bu);}
+  const be=btn('Edit','btn');be.onclick=()=>editNote(n);a.appendChild(be);
+  const bx=btn('Del','btn danger');bx.onclick=()=>{if(ask('Delete this note?')){state.notes=state.notes.filter(x=>x!==n);save();renderNotes();updateCounts();}};a.appendChild(bx);
+  return r;};
+ if(open.length)open.forEach(n=>host.appendChild(mk(n,false)));
+ else{const e=document.createElement('div');e.className='note';e.textContent='no open notes';host.appendChild(e);}
+ if(done.length){const tg=document.createElement('button');tg.className='settled-toggle';tg.style.padding='10px 16px 4px';tg.textContent=(notesShowDone?'▾ hide ':'▸ show ')+done.length+' done';tg.onclick=()=>{notesShowDone=!notesShowDone;renderNotes();};host.appendChild(tg);if(notesShowDone)done.forEach(n=>host.appendChild(mk(n,true)));}
+}
+
+/* ---------- modal editor ---------- */
+let mSave=null,mDel=null;
+function openModal(title,fields,obj,onSave,onDelete){
+ $('m-title').textContent=title;const form=$('m-form');form.innerHTML='';
+ fields.forEach(fd=>{const wrap=document.createElement('div');wrap.className='fld';let val=obj?obj[fd.k]:'';if(fd.k==='pl'&&Array.isArray(val))val=val.join(', ');
+  let ctl;
+  if(fd.t==='select'){ctl=document.createElement('select');fd.opts.forEach(o=>{const op=document.createElement('option');op.value=o;op.textContent=o;if(o===val)op.selected=true;ctl.appendChild(op);});}
+  else if(fd.t==='textarea'){ctl=document.createElement('textarea');ctl.value=val==null?'':val;}
+  else{ctl=document.createElement('input');ctl.type='text';ctl.inputMode=fd.t==='number'?'decimal':'text';ctl.value=val==null?'':val;if(fd.ph)ctl.placeholder=fd.ph;}
+  ctl.id='fld-'+fd.k;wrap.innerHTML=`<label for="fld-${fd.k}">${fd.l}</label>`;wrap.appendChild(ctl);
+  if(fd.hint){const h=document.createElement('div');h.className='hint';h.textContent=fd.hint;wrap.appendChild(h);}form.appendChild(wrap);});
+ mSave=()=>{const out={};fields.forEach(fd=>{let v=$('fld-'+fd.k).value;if(fd.t==='number'){v=num(v);}else if(fd.k==='pl'){v=v.split(',').map(s=>s.trim()).filter(Boolean);}out[fd.k]=v;});onSave(out);closeModal();save();renderAll();};
+ mDel=onDelete||null;$('m-del').style.display=onDelete?'inline-block':'none';$('modal').classList.remove('hidden');
+}
+function closeModal(){$('modal').classList.add('hidden');mSave=null;mDel=null;}
+$('m-x').onclick=closeModal;$('m-cancel').onclick=closeModal;$('m-save').onclick=()=>mSave&&mSave();
+$('m-del').onclick=()=>{if(mDel&&ask('Delete this?')){mDel();closeModal();save();renderAll();}};
+$('modal').onclick=e=>{if(e.target===$('modal'))closeModal();};
+const F_ENTRY=[{k:'date',l:'Date',t:'text',ph:'e.g. 24–30 Aug'},{k:'label',l:'Platform / label',t:'text',ph:'e.g. RomClub'},{k:'amount',l:'Amount',t:'number',hint:'+ = they owe Paul,  − = Paul owes'},{k:'bucket',l:'Separate debt',t:'text',ph:'blank = main running balance',hint:'give a name (e.g. "old loan 8000") to keep this apart from the main balance; same name = same debt'},{k:'note',l:'Note',t:'text'}];
+const F_PERSON=[{k:'n',l:'Name',t:'text'},{k:'t',l:'Type',t:'select',opts:['Rakeback','Partner','Rake share','Other']},{k:'pl',l:'Platforms',t:'text',hint:'comma-separated'},{k:'rb',l:'Rakeback %',t:'text',ph:'e.g. 50%'},{k:'cur',l:'Currency',t:'select',opts:['RON','USD','AED','CHF','EUR']},{k:'note',l:'Note on this person',t:'textarea'}];
+const F_LOAN=[{k:'n',l:'Name',t:'text'},{k:'dir',l:'Direction',t:'select',opts:['owed to Paul','Paul owes']},{k:'a',l:'Amount',t:'number'},{k:'c',l:'Currency',t:'select',opts:['RON','USD','AED','CHF','EUR']},{k:'due',l:'Due date',t:'text',ph:'optional, e.g. 8 Oct'},{k:'note',l:'Note',t:'text'}];
+const F_HORSE=[{k:'n',l:'Name',t:'text'},{k:'kind',l:'Type',t:'select',opts:['cash','tourney','live'],hint:'cash = online cash on clubs (week lines per account × club) · tourney = online tournaments (balance per site) · live'},{k:'split',l:'Split  paul / horse',t:'text',ph:'e.g. 50 / 50'},{k:'invested',l:'Bankroll staked (RON)',t:'number',hint:'tournaments only: net = site balances − this'},{k:'makeup',l:'Makeup left',t:'number',hint:'live only — cash / tourney compute it from their lines'},{k:'pnl',l:'P&L',t:'number',hint:'live only'},{k:'cur',l:'Currency',t:'select',opts:['RON','USD','AED','CHF','EUR']},{k:'sub',l:'Note',t:'textarea'}];
+const F_LINE=[{k:'wk',l:'Week',t:'text',ph:'e.g. 31 Aug – 6 Sep'},{k:'acct',l:'Account',t:'text',ph:'nickname used, e.g. Paladin9'},{k:'club',l:'Club',t:'text',ph:'e.g. RoyalRo'},{k:'pnl',l:'P&L (in the club currency)',t:'number',hint:'+ won · − lost'},{k:'rake',l:'Rake paid',t:'number'},{k:'pct',l:'Rakeback %',t:'number',hint:'default 80 — change it any time, the result recalculates'},{k:'cur',l:'Currency',t:'select',opts:['RON','USD','AED','DXB','CHF'],hint:'DXB = Dubai club chips (1 chip = 0.5 AED)'},{k:'rate',l:'Rate to RON',t:'number',hint:'blank = live rate when saved (ignored for RON) · DXB = 0.5 × AED rate'},{k:'note',l:'Note',t:'text'}];
+const F_SITE=[{k:'site',l:'Site / platform',t:'text',ph:'e.g. GGPoker, CoinPoker, PokerStars'},{k:'bal',l:'Current balance',t:'number'},{k:'cur',l:'Currency',t:'select',opts:['USD','RON','AED','DXB','CHF'],hint:'DXB = Dubai club chips (1 chip = 0.5 AED)'},{k:'rate',l:'Rate to RON',t:'number',hint:'blank = live rate when saved'},{k:'note',l:'Note',t:'text'}];
+function editEntry(p,t){openModal(t?'Edit entry':'Add entry',F_ENTRY,t,o=>{if(t){Object.assign(t,o);}else{p.tx.push({id:uid(),...o});}},t?()=>{p.tx=p.tx.filter(x=>x!==t);}:null);}
+function editPerson(p){openModal('Edit person',F_PERSON,p,o=>Object.assign(p,o),()=>{state.people=state.people.filter(x=>x!==p);openId=null;});}
+function editLoan(l){openModal('Edit loan',F_LOAN,l,o=>Object.assign(l,o),()=>{state.loans=state.loans.filter(x=>x!==l);});}
+const F_CLUB=[{k:'n',l:'Club / site',t:'text'},{k:'kind',l:'Kind',t:'select',opts:['ClubGG club','Online site','Live','Other']},{k:'cid',l:'Club ID',t:'text',ph:'e.g. 458886'},{k:'ref',l:'Referral ID',t:'text',ph:'member id we joined through, e.g. 6985-1738'},{k:'rel',l:'Relationship',t:'text',ph:'e.g. we manage · players · rakeback · staking'},{k:'deal',l:'Deal / rakeback',t:'text',ph:'e.g. players 50% · Paul 80%'},{k:'cur',l:'Currency',t:'select',opts:['RON','USD','AED','CHF','EUR']},{k:'auto',l:'Weekly numbers',t:'select',opts:['manual','automated']},{k:'rake',l:'Rake structure',t:'textarea',hint:'one line per stake, kept as typed'},{k:'note',l:'Note',t:'textarea'}];
+const F_NOTE=[{k:'text',l:'Note',t:'textarea'}];
+function editNote(n){openModal('Edit note',F_NOTE,n,o=>Object.assign(n,o),()=>{state.notes=state.notes.filter(x=>x!==n);});}
+function editClub(c){openModal('Edit club',F_CLUB,c,o=>Object.assign(c,o),()=>{state.clubs=state.clubs.filter(x=>x!==c);});}
+function editHorse(s){openModal('Edit horse',F_HORSE,s,o=>Object.assign(s,o),()=>{state.staking=state.staking.filter(x=>x!==s);});}
+function editLine(s,l){const last=(s.log||[]).slice(-1)[0];openModal(l?'Edit week line':'Add week line',F_LINE,l||{pct:80,cur:'RON',wk:last?last.wk:''},o=>{if(o.pct==null)o.pct=80;if(o.cur==='RON'){o.rate=null;}else if(!o.rate){o.rate=fxRate(o.cur);}if(l){Object.assign(l,o);}else{s.log=s.log||[];s.log.push({id:uid(),...o});}},l?()=>{s.log=s.log.filter(x=>x!==l);}:null);}
+function editSite(s,x){openModal(x?'Edit site':'Add site',F_SITE,x||{cur:'USD'},o=>{if(o.cur==='RON'){o.rate=null;}else if(!o.rate){o.rate=fxRate(o.cur);}if(x){Object.assign(x,o);}else{s.sites=s.sites||[];s.sites.push({id:uid(),...o});}},x?()=>{s.sites=s.sites.filter(y=>y!==x);}:null);}
+$('add-person').onclick=()=>openModal('Add person',F_PERSON,null,o=>{const np={id:uid(),tx:[],...o};np.pl=np.pl||[];state.people.unshift(np);openId=np.id;});
+$('add-loan').onclick=()=>openModal('Add loan',F_LOAN,null,o=>state.loans.unshift({id:uid(),...o}));
+$('add-note').onclick=()=>openModal('Add note',F_NOTE,null,o=>state.notes.unshift({id:uid(),created:Date.now(),...o}));
+$('add-club').onclick=()=>openModal('Add club',F_CLUB,null,o=>state.clubs.unshift({id:uid(),...o}));
+$('hide-zero').onclick=()=>{hideZero=!hideZero;try{localStorage.setItem('pb-hide-zero',hideZero?'1':'0');}catch(e){}renderPeople();};
+$('add-horse').onclick=()=>openModal('Add horse',F_HORSE,{kind:'cash',split:'50 / 50',cur:'RON'},o=>state.staking.unshift({id:uid(),...o}));
+
+/* ---------- admin: access codes ---------- */
+async function openCodes(){
+ $('codesmodal').classList.remove('hidden');await renderCodes();
+}
+async function renderCodes(){
+ const body=$('codes-body');body.innerHTML='<div class="note">loading…</div>';
+ try{const r=await api('/api/codes');const d=await r.json();body.innerHTML='';
+  if(!d.codes.length)body.innerHTML='<div class="note">no codes yet — generate one for Paul</div>';
+  d.codes.forEach(c=>{const row=document.createElement('div');row.className='crow'+(c.revoked?' rev':'');
+   row.innerHTML=`<div><div class="ccode">${esc(c.code)}</div><div class="clabel">${esc(c.label||'')}${c.is_admin?' · admin':''}${c.revoked?' · revoked':''}</div></div>`;
+   if(!c.is_admin&&!c.revoked){const rv=btn('Revoke','btn danger');rv.onclick=async()=>{if(ask('Revoke code '+c.code+'? That device will be logged out.')){await api('/api/codes/revoke',{method:'POST',body:JSON.stringify({code:c.code})});renderCodes();}};row.appendChild(rv);}
+   body.appendChild(row);});
+ }catch(e){body.innerHTML='<div class="note">could not load codes</div>';}
+}
+$('cm-new').onclick=async()=>{const label=prompt('Label for this code (e.g. "Paul phone"):','Paul');if(label===null)return;
+ const r=await api('/api/codes',{method:'POST',body:JSON.stringify({label})});const d=await r.json();renderCodes();
+ setTimeout(()=>alert('New code: '+d.code+'\n\nGive this to '+(label||'them')+'. They enter it once and stay logged in.'),100);};
+$('cm-x').onclick=()=>$('codesmodal').classList.add('hidden');
+$('codesmodal').onclick=e=>{if(e.target===$('codesmodal'))$('codesmodal').classList.add('hidden');};
+$('codes').onclick=openCodes;
+
+/* ---------- shell ---------- */
+function updateCounts(){$('c-people').textContent=state.people.length;$('c-staking').textContent=state.staking.length;$('c-loans').textContent=state.loans.length;$('c-inbox').textContent=state.inbox.length;$('c-clubs').textContent=state.clubs.length;$('c-notes').textContent=state.notes.filter(n=>!n.done).length;}
+function renderAll(){totals();buildFilters();renderPeople();renderStaking();renderLoans();renderInbox();renderClubs();renderNotes();updateCounts();}
+function showTab(v){document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x.dataset.view===v));['people','staking','loans','inbox','clubs','notes'].forEach(k=>$('view-'+k).classList.toggle('hidden',k!==v));window.scrollTo({top:0,behavior:'smooth'});}
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.view));
+window.addEventListener('focus',refresh);refreshTimer=setInterval(refresh,25000);
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}
+boot();
+</script>
+</body></html>

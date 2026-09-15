@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClubGG Collector</title>
+<style>
+  :root{
+    --bg:#0f141b; --panel:#171e28; --panel2:#1e2733; --line:#2a3644;
+    --text:#e6edf3; --muted:#8aa0b4; --accent:#2ea043; --accent2:#1f6feb;
+    --danger:#e5534b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:14px/1.5 system-ui,Segoe UI,Roboto,sans-serif;
+       background:var(--bg);color:var(--text)}
+  header{padding:14px 20px;background:var(--panel);border-bottom:1px solid var(--line);
+         display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header h1{font-size:16px;margin:0;font-weight:650}
+  .pill{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--panel2);
+        color:var(--muted);border:1px solid var(--line)}
+  .pill.ok{color:#7ee2a0;border-color:#245f38}
+  .pill.bad{color:#ffb4ae;border-color:#5f2424}
+  main{display:grid;grid-template-columns:260px 1fr;gap:0;height:calc(100vh - 57px)}
+  #agents{border-right:1px solid var(--line);overflow:auto;background:var(--panel)}
+  #agents .a{padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--line);
+             display:flex;justify-content:space-between;gap:8px}
+  #agents .a:hover{background:var(--panel2)}
+  #agents .a.sel{background:var(--panel2);border-left:3px solid var(--accent)}
+  #agents .a .c{color:var(--muted);font-size:12px}
+  .right{display:flex;flex-direction:column;overflow:hidden}
+  .toolbar{padding:12px 18px;border-bottom:1px solid var(--line);display:flex;
+           gap:10px;align-items:center;flex-wrap:wrap;background:var(--panel)}
+  .toolbar .grow{flex:1}
+  button{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);
+         padding:7px 14px;border-radius:8px;cursor:pointer}
+  button:hover{border-color:#3a4a5c}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#04240f;font-weight:650}
+  button.primary:disabled{opacity:.5;cursor:not-allowed}
+  input[type=date],input[type=number]{font:inherit;color:var(--text);background:var(--panel2);
+         border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+  #players{overflow:auto;padding:8px 12px;flex:1}
+  .row{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:10px}
+  .row:hover{background:var(--panel2)}
+  .row input{width:18px;height:18px;accent-color:var(--accent)}
+  .av{width:34px;height:34px;border-radius:50%;background:var(--panel2);flex:none;
+      border:1px solid var(--line)}
+  .row .nm{font-weight:550}
+  .row .id{color:var(--muted);font-size:12px}
+  .muted{color:var(--muted)}
+  .empty{padding:40px;text-align:center;color:var(--muted)}
+  footer{border-top:1px solid var(--line);background:var(--panel);padding:10px 18px;
+         display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #log{font-family:ui-monospace,Consolas,monospace;font-size:12px;white-space:pre-wrap;
+       background:#0b0f14;border:1px solid var(--line);border-radius:8px;padding:10px;
+       max-height:150px;overflow:auto;margin:0 18px 12px;color:#c7d3de;display:none}
+  a{color:#79b8ff}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>ClubGG Collector</h1>
+    <div id="totalplayers" class="muted" style="font-size:12px;margin-top:2px">Total players: …</div>
+  </div>
+  <span id="roster" class="pill">roster: …</span>
+  <span id="driver" class="pill">driver: …</span>
+  <button id="reload">Reload roster</button>
+  <span class="grow" style="flex:1"></span>
+  <span id="selcount" class="pill">0 selected</span>
+</header>
+
+<main>
+  <div id="agents"><div class="empty">loading…</div></div>
+  <div class="right">
+    <div class="toolbar">
+      <strong id="agentName">Pick an agent / SA</strong>
+      <button id="selAll">Select all</button>
+      <button id="deselAll">Deselect all</button>
+      <span class="grow"></span>
+    </div>
+    <div id="players"><div class="empty">Select an agent on the left to see its players.</div></div>
+  </div>
+</main>
+
+<footer>
+  <label>From <input type="date" id="start"></label>
+  <label>To <input type="date" id="end"></label>
+  <label>Rakeback <input type="number" id="rb" value="30" min="0" max="100" style="width:64px"> %</label>
+  <span class="grow" style="flex:1"></span>
+  <span id="status" class="muted"></span>
+  <button id="collect" class="primary">Collect data</button>
+</footer>
+<pre id="log"></pre>
+
+<script>
+const AV = `<svg class="av" viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#2a3644"/><circle cx="18" cy="14" r="6" fill="#5b6b7c"/><path d="M6 31c0-6 6-9 12-9s12 3 12 9" fill="#5b6b7c"/></svg>`;
+let AGENTS = [], byId = new Map(), selected = new Set(), current = null, polling = null;
+
+const $ = s => document.querySelector(s);
+
+async function init(){
+  const d = await (await fetch('/api/driver')).json();
+  const dv = $('#driver');
+  dv.textContent = 'driver: ' + (d.alive ? 'connected' : 'NOT running');
+  dv.className = 'pill ' + (d.alive ? 'ok' : 'bad');
+  const r = await (await fetch('/api/roster')).json();
+  $('#roster').textContent = 'roster: ' + (r.roster || 'none');
+  AGENTS = r.agents;
+  AGENTS.forEach(a => a.players.forEach(p => byId.set(p.id, {name:p.name, agent:a.agent})));
+  renderAgents(); updateTotal();
+  // default date range: previous Mon–Sun
+  const t = new Date(); const day = (t.getDay()+6)%7;
+  const sun = new Date(t); sun.setDate(t.getDate()-day-1);
+  const mon = new Date(sun); mon.setDate(sun.getDate()-6);
+  $('#start').value = mon.toISOString().slice(0,10);
+  $('#end').value = sun.toISOString().slice(0,10);
+}
+
+function renderAgents(){
+  const el = $('#agents'); el.innerHTML='';
+  AGENTS.forEach(a=>{
+    const d=document.createElement('div'); d.className='a'+(a.agent===current?' sel':'');
+    d.innerHTML=`<span>${esc(a.agent)}</span><span class="c">${a.players.length}</span>`;
+    d.onclick=()=>{current=a.agent; renderAgents(); renderPlayers();};
+    el.appendChild(d);
+  });
+}
+
+function renderPlayers(){
+  const a = AGENTS.find(x=>x.agent===current);
+  $('#agentName').textContent = current ? `${current} — ${a.players.length} players` : 'Pick an agent / SA';
+  const el = $('#players'); el.innerHTML='';
+  if(!a){el.innerHTML='<div class="empty">Select an agent on the left.</div>';return;}
+  a.players.forEach(p=>{
+    const row=document.createElement('label'); row.className='row';
+    row.innerHTML=`<input type="checkbox" ${selected.has(p.id)?'checked':''}>${AV}
+      <span><div class="nm">${esc(p.name||'(no name)')}</div>
+      <div class="id">${esc(p.id)}</div></span>`;
+    row.querySelector('input').onchange=e=>{
+      e.target.checked?selected.add(p.id):selected.delete(p.id); updateCount();
+    };
+    el.appendChild(row);
+  });
+}
+
+function updateCount(){ $('#selcount').textContent = selected.size + ' selected'; }
+function updateTotal(){ $('#totalplayers').textContent = 'Total players: ' + AGENTS.reduce((s,a)=>s+a.players.length,0); }
+function esc(s){return (s||'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+
+async function loadRoster(){
+  const r = await (await fetch('/api/roster')).json();
+  $('#roster').textContent = 'roster: ' + (r.roster || 'none');
+  AGENTS = r.agents; byId.clear();
+  AGENTS.forEach(a => a.players.forEach(p => byId.set(p.id, {name:p.name, agent:a.agent})));
+  renderAgents(); updateTotal(); if(current) renderPlayers();
+}
+
+$('#reload').onclick=async()=>{
+  if(!confirm('Rescan the full roster from ClubGG? This drives ClubGG and can take several minutes (it auto-restarts ClubGG as needed).')) return;
+  const res=await fetch('/api/reload_roster',{method:'POST'});
+  if(!res.ok){const e=await res.json();alert('Cannot start: '+e.error);return;}
+  const btn=$('#reload'); btn.disabled=true; const label=btn.textContent; btn.textContent='Rescanning…';
+  $('#log').style.display='block';
+  const iv=setInterval(async()=>{
+    const s=await (await fetch('/api/roster_status')).json();
+    $('#log').textContent=(s.log||[]).join('\n'); $('#log').scrollTop=$('#log').scrollHeight;
+    if(s.finished){
+      clearInterval(iv); btn.disabled=false; btn.textContent=label;
+      if(s.error){ alert('Roster scan error: '+s.error); }
+      await loadRoster();
+      $('#status').textContent='Roster reloaded.';
+    }
+  },1500);
+};
+
+$('#selAll').onclick=()=>{const a=AGENTS.find(x=>x.agent===current);if(a){a.players.forEach(p=>selected.add(p.id));renderPlayers();updateCount();}};
+$('#deselAll').onclick=()=>{const a=AGENTS.find(x=>x.agent===current);if(a){a.players.forEach(p=>selected.delete(p.id));renderPlayers();updateCount();}};
+
+$('#collect').onclick=async()=>{
+  if(!selected.size){alert('Tick at least one player.');return;}
+  const targets=[...selected].map(id=>({id, name:byId.get(id).name, agent:byId.get(id).agent}));
+  const body={start:$('#start').value, end:$('#end').value, rakeback:+$('#rb').value, targets};
+  const res=await fetch('/api/collect',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json();alert('Cannot start: '+e.error);return;}
+  $('#collect').disabled=true; $('#log').style.display='block'; $('#log').textContent='';
+  poll();
+};
+
+function poll(){
+  clearInterval(polling);
+  polling=setInterval(async()=>{
+    const j=await (await fetch('/api/progress')).json();
+    const lines=j.events.filter(e=>e.kind==='log').map(e=>e.msg);
+    $('#log').textContent=lines.join('\n');
+    $('#log').scrollTop=$('#log').scrollHeight;
+    $('#status').textContent=`collected ${j.done}/${j.total}`;
+    if(j.finished){
+      clearInterval(polling); $('#collect').disabled=false;
+      let s=`Done: ${j.done}/${j.total}.`;
+      if(j.error) s+=' Error: '+j.error;
+      if(j.sheet) s+=' Opened sheet: '+j.sheet;
+      $('#status').textContent=s;
+    }
+  },1000);
+}
+
+init();
+</script>
+</body>
+</html>

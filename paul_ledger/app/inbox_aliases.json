@@ -1,0 +1,16 @@
+{
+  "_comment": "ClubGG display name (as on Paul's sheet) -> person name in Paul's Book, so Approve posts into the existing ledger instead of creating a duplicate. A value 'staking:<horse>' means the member is a horse Paul stakes: the weekly run adds a RomanianClub week line to that horse (Staking tab) instead of an inbox debt. A value 'skip' means the member is Paul's own account: never proposed.",
+  "PinkFL01D": "PinkFloid",
+  "Cohiba Lover (+group)": "Cohiba",
+  "Dexter001 (+group)": "Dexter",
+  "Paulinh00909": "Paulinho",
+  "SkyBri777": "Skybri",
+  "spike088": "spike (Bursuc)",
+  "Laurentiu Avram": "Avram Laurențiu",
+  "KingTwoSuited": "Lupuleac",
+  "Paladin9": "staking:Paladin",
+  "Hayanski@": "skip",
+  "2HighWins": "2Highwins (dicu)",
+  "TyranT1979": "staking:Paladin",
+  "Meeeeesi10": "Mircea (Meeeeesi10)"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "paul-ledger",
+  "compatibility_date": "2025-09-01",
+  "pages_build_output_dir": "./dist",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "paul-ledger",
+      "database_id": "3b2b560b-5927-4aa9-9794-d28ce18bb59f"
+    }
+  ]
+}

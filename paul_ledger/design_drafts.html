@@ -1,0 +1,227 @@
+<title>Paul's Book Drafts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=JetBrains+Mono:wght@400;500;600;700&family=Archivo:wdth,wght@62..125,400;62..125,500;62..125,600;62..125,700&display=swap">
+<style>
+/* ---------- page chrome (theme-aware, recedes) ---------- */
+:root{--pg:#F1F1EF;--pt:#161616;--pm:#6B6B68;--pl:#D9D9D5;--pbtn:#FFFFFF;--pon:#161616;--pontext:#FFFFFF}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pg:#101010;--pt:#ECECEA;--pm:#8F8F8A;--pl:#2A2A28;--pbtn:#181818;--pon:#ECECEA;--pontext:#101010}}
+:root[data-theme="dark"]{--pg:#101010;--pt:#ECECEA;--pm:#8F8F8A;--pl:#2A2A28;--pbtn:#181818;--pon:#ECECEA;--pontext:#101010}
+*{box-sizing:border-box}
+body{background:var(--pg);color:var(--pt);font-family:"Archivo",system-ui,sans-serif;margin:0;padding:22px 18px 60px;-webkit-font-smoothing:antialiased}
+.top{max-width:1380px;margin:0 auto 18px;display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.top h1{font-size:15px;font-weight:600;margin:0;letter-spacing:.01em}
+.top p{margin:0;font-size:13px;color:var(--pm)}
+.switch{display:none;gap:6px;margin:0 auto 14px;max-width:1380px}
+.switch button{font:inherit;font-size:13px;font-weight:600;padding:8px 14px;border:1px solid var(--pl);background:var(--pbtn);color:var(--pt);cursor:pointer}
+.switch button[aria-pressed="true"]{background:var(--pon);color:var(--pontext);border-color:var(--pon)}
+.grid{max-width:1380px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:start}
+.panel{min-width:0}
+.cap{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--pm);font-weight:600;margin:0 0 8px 2px}
+.cap b{color:var(--pt)}
+.phone{border:1px solid var(--pl);height:780px;overflow:auto;scrollbar-width:thin}
+.notes{margin:12px 2px 0;padding:0;list-style:none;font-size:13px;color:var(--pm);line-height:1.55}
+.notes li{padding-left:14px;position:relative}
+.notes li::before{content:"—";position:absolute;left:0}
+@media (max-width:1180px){
+  .grid{grid-template-columns:1fr}
+  .panel:not(.active){display:none}
+  .switch{display:flex}
+  .phone{height:auto;max-height:none;overflow:visible}
+}
+/* tabular everywhere */
+.num,.amt,.net{font-variant-numeric:tabular-nums}
+
+/* ======================= DRAFT 1 — THE LEDGER ======================= */
+.d1{background:#EFEBE3;color:#1C1B18;font-family:"Newsreader",Georgia,serif;padding:22px 20px 30px;min-height:100%}
+.d1 .head{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #1C1B18;padding-bottom:10px}
+.d1 .brand{font-size:24px;font-weight:500;font-style:italic;letter-spacing:-.01em}
+.d1 .date{font-family:"JetBrains Mono",monospace;font-size:11px;color:#6F6A60;letter-spacing:.04em}
+.d1 .total{padding:18px 0 14px;border-bottom:3px double #1C1B18}
+.d1 .total .lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A60;font-family:"JetBrains Mono",monospace}
+.d1 .total .num{font-family:"JetBrains Mono",monospace;font-size:34px;font-weight:600;letter-spacing:-.02em;margin-top:4px;color:#2F5D3A}
+.d1 .total .num .cur{font-size:13px;font-weight:500;color:#6F6A60;letter-spacing:.06em;margin-left:6px}
+.d1 .total .split{display:flex;gap:18px;margin-top:6px;font-family:"JetBrains Mono",monospace;font-size:12px;color:#6F6A60}
+.d1 .split b{color:#1C1B18;font-weight:500}
+.d1 .tabs{display:flex;gap:22px;padding:16px 0 0;font-size:15px}
+.d1 .tabs span{color:#6F6A60;padding-bottom:4px}
+.d1 .tabs .on{color:#1C1B18;border-bottom:1.5px solid #1C1B18}
+.d1 .tabs em{font-style:normal;font-family:"JetBrains Mono",monospace;font-size:11px;color:#A32D2D;margin-left:3px}
+.d1 .sec{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#6F6A60;margin:26px 0 4px;padding-bottom:6px;border-bottom:1px solid #CFC8B8}
+.d1 .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:11px 0;border-bottom:1px solid #DDD6C6}
+.d1 .row .nm{font-size:17px;font-weight:500;line-height:1.2}
+.d1 .row .meta{font-size:12.5px;color:#6F6A60;margin-top:2px;font-style:italic}
+.d1 .row .amt{font-family:"JetBrains Mono",monospace;font-size:15.5px;font-weight:500;white-space:nowrap}
+.d1 .cr{color:#2F5D3A}.d1 .dr{color:#A32D2D}
+.d1 .row.settled .nm,.d1 .row.settled .amt{text-decoration:line-through;color:#9A948A}
+.d1 .row.settled .meta{color:#9A948A}
+.d1 .tag{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9A948A;margin-left:8px}
+.d1 .act{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#1C1B18;border-bottom:1px solid #1C1B18;margin-left:12px}
+.d1 .pend{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px dotted #B9B1A0}
+.d1 .pend .amt{font-family:"JetBrains Mono",monospace;font-size:15px}
+.d1 .foot{margin-top:26px;font-size:12px;color:#6F6A60;font-style:italic;text-align:right}
+
+/* ======================= DRAFT 2 — THE TERMINAL ======================= */
+.d2{background:#0E1112;color:#D7DEDC;font-family:"JetBrains Mono",ui-monospace,monospace;padding:0 0 26px;min-height:100%;font-size:13px}
+.d2 .ticker{background:#141819;border-bottom:1px solid #1F2628;padding:10px 16px;font-size:11.5px;letter-spacing:.08em;color:#7C8886;white-space:nowrap;overflow:hidden}
+.d2 .ticker b{color:#D7DEDC;font-weight:600;margin-left:4px}
+.d2 .g{color:#59B37E}.d2 .r{color:#D95F5F}.d2 .a{color:#D9A441}
+.d2 .brand{padding:18px 16px 6px;font-size:16px;font-weight:700;letter-spacing:.06em}
+.d2 .brand span{font-weight:400;color:#7C8886;font-size:11px;letter-spacing:.1em;margin-left:8px}
+.d2 .tabs{padding:6px 16px 14px;font-size:12px;letter-spacing:.06em;color:#7C8886;display:flex;gap:14px}
+.d2 .tabs .on{color:#D7DEDC}
+.d2 .cols{display:flex;justify-content:space-between;padding:8px 16px;font-size:10.5px;letter-spacing:.14em;color:#7C8886;border-top:1px solid #1F2628;border-bottom:1px solid #1F2628;background:#111516}
+.d2 .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #1A2022}
+.d2 .row:hover{background:#121617}
+.d2 .nm{font-weight:600;font-size:13.5px;letter-spacing:.02em}
+.d2 .meta{font-size:11px;color:#7C8886;margin-top:2px;letter-spacing:.02em}
+.d2 .amt{font-size:14.5px;font-weight:600;white-space:nowrap}
+.d2 .row.settled .nm,.d2 .row.settled .amt{color:#4F5A58;text-decoration:line-through}
+.d2 .tag{font-size:10px;color:#4F5A58;letter-spacing:.12em;margin-left:8px}
+.d2 .act{font-size:11px;color:#D9A441;letter-spacing:.08em;margin-left:10px}
+.d2 .pend{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid #1A2022;background:#101415}
+.d2 .foot{padding:18px 16px 0;font-size:10.5px;color:#4F5A58;letter-spacing:.08em}
+
+/* ======================= DRAFT 3 — THE BROADSHEET ======================= */
+.d3{background:#FFFFFF;color:#111111;font-family:"Archivo",system-ui,sans-serif;padding:22px 20px 30px;min-height:100%}
+.d3 .brand{font-size:13px;font-weight:600;letter-spacing:.02em;display:flex;justify-content:space-between}
+.d3 .brand span{color:#8A8A8A;font-weight:500}
+.d3 .hero{padding:26px 0 18px;border-bottom:2px solid #111}
+.d3 .hero .lab{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8A8A8A;font-weight:600}
+.d3 .hero .net{font-size:62px;font-weight:600;font-stretch:75%;letter-spacing:-.035em;line-height:1;margin-top:6px}
+.d3 .hero .sub{display:flex;gap:18px;margin-top:12px;font-size:13px;color:#8A8A8A;flex-wrap:wrap}
+.d3 .hero .sub b{color:#111;font-weight:500}
+.d3 .tabs{display:flex;gap:20px;padding:16px 0 0;font-size:14px;font-weight:500}
+.d3 .tabs span{color:#8A8A8A;padding-bottom:6px}
+.d3 .tabs .on{color:#111;border-bottom:3px solid #111}
+.d3 .tabs em{font-style:normal;color:#E02424;margin-left:4px;font-size:12px}
+.d3 .sec{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8A8A8A;font-weight:600;margin:28px 0 2px;padding-bottom:8px;border-bottom:1px solid #E0E0E0}
+.d3 .row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:13px 0;border-bottom:1px solid #E0E0E0}
+.d3 .nm{font-size:16px;font-weight:500;letter-spacing:-.005em}
+.d3 .meta{font-size:12px;color:#8A8A8A;margin-top:2px}
+.d3 .amt{font-size:16px;font-weight:600;white-space:nowrap;letter-spacing:-.01em}
+.d3 .neg{color:#E02424}
+.d3 .row.settled .nm,.d3 .row.settled .amt{color:#B5B5B5;text-decoration:line-through}
+.d3 .tag{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#B5B5B5;margin-left:8px;font-weight:600}
+.d3 .act{font-size:12px;font-weight:600;color:#111;border-bottom:2px solid #111;margin-left:12px}
+.d3 .pend{display:flex;justify-content:space-between;align-items:baseline;padding:13px 0;border-bottom:1px solid #E0E0E0}
+.d3 .foot{margin-top:26px;font-size:12px;color:#8A8A8A}
+</style>
+
+<div class="top">
+  <h1>Paul&rsquo;s Book &mdash; three design drafts</h1>
+  <p>Same real balances in each. Scroll inside a draft; on a narrow screen use the switcher.</p>
+</div>
+<div class="switch" id="switch">
+  <button data-p="1" aria-pressed="true">1 &middot; Ledger</button>
+  <button data-p="2" aria-pressed="false">2 &middot; Terminal</button>
+  <button data-p="3" aria-pressed="false">3 &middot; Broadsheet</button>
+</div>
+
+<div class="grid">
+  <section class="panel active" id="p1">
+    <p class="cap"><b>Draft 1</b> &mdash; The Ledger</p>
+    <div class="phone"><div class="d1" id="d1"></div></div>
+    <ul class="notes">
+      <li>A real register: ruled rows, amounts in a fixed right column, double-rule under the carried balance.</li>
+      <li>Newsreader serif for names, JetBrains Mono for every figure. No cards, shadows or pills.</li>
+      <li>Oxblood debits, bookkeeper-green credits &mdash; colour only on the numbers.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="p2">
+    <p class="cap"><b>Draft 2</b> &mdash; The Terminal</p>
+    <div class="phone"><div class="d2" id="d2"></div></div>
+    <ul class="notes">
+      <li>Trading-desk density: one monospace family, hierarchy by weight only, ticker strip for totals.</li>
+      <li>Column headers, hairline grid, bracketed tabs. Looks like a tool, not a product.</li>
+      <li>Muted greens/reds (not neon); amber reserved for &ldquo;needs action&rdquo;.</li>
+    </ul>
+  </section>
+
+  <section class="panel" id="p3">
+    <p class="cap"><b>Draft 3</b> &mdash; The Broadsheet</p>
+    <div class="phone"><div class="d3" id="d3"></div></div>
+    <ul class="notes">
+      <li>One number carries the page: the net, set huge in narrow Archivo. Everything else is quiet.</li>
+      <li>Monochrome; the only colour is a single red for what Paul owes.</li>
+      <li>Strict left-aligned grid, heavy underline tabs, hairlines. Gallery-poster clarity.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+const people=[
+ {n:"Sorin",meta:"Partner · RoyalRo",a:69787},
+ {n:"PinkFloid",meta:"Other",a:59314},
+ {n:"Montana (Emir)",meta:"Rakeback · RomanianClub · pays in Albania",a:38171},
+ {n:"DaniParaschiv",meta:"Other",a:10500},
+ {n:"Paulinho",meta:"Rakeback · RomanianClub, Carpatix",a:7370},
+ {n:"ssRMN",meta:"Rakeback · RomanianClub",a:-3930},
+ {n:"Raiciu",meta:"Partner",a:-4359},
+ {n:"Skybri",meta:"Rakeback · RomanianClub",a:-6563},
+ {n:"Loren",meta:"Other · to send in 1–2 days",a:-11100},
+ {n:"Muflender",meta:"Rakeback · RoyalRo, Dubai · 50%",a:2790,settled:true},
+];
+const pend={n:"Paulinho",wk:"31 Aug – 3 Sep",plat:"RomanianClub",a:-4820};
+const col=people.filter(p=>!p.settled&&p.a>0).reduce((s,p)=>s+p.a,0);
+const pay=people.filter(p=>!p.settled&&p.a<0).reduce((s,p)=>s-p.a,0);
+const net=col-pay;
+const f=n=>Math.abs(n).toLocaleString('en-US');
+const sgn=n=>(n<0?'−':'+')+f(n);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---- Draft 1: Ledger ---- */
+function d1(){
+ const rows=people.map((p,i)=>{
+  const cls=p.settled?'settled':(p.a<0?'dr':'cr');
+  const act=(i===0)?'<span class="act">Paid</span>':'';
+  return `<div class="row ${p.settled?'settled':''}"><div><div class="nm">${esc(p.n)}${p.settled?'<span class="tag">paid</span>':''}</div><div class="meta">${esc(p.meta)}</div></div><div class="amt ${cls}">${sgn(p.a)}${act}</div></div>`;}).join('');
+ return `<div class="head"><div class="brand">Paul’s Book</div><div class="date">3 SEP 2026</div></div>
+ <div class="total"><div class="lab">Balance carried</div><div class="num">${sgn(net)}<span class="cur">RON</span></div>
+  <div class="split"><span>to collect <b>${f(col)}</b></span><span>to pay <b>${f(pay)}</b></span></div></div>
+ <nav class="tabs"><span class="on">People</span><span>Staking</span><span>Loans</span><span>Inbox<em>1</em></span></nav>
+ <div class="sec">People</div>${rows}
+ <div class="sec">Pending entries</div>
+ <div class="pend"><div><div class="nm" style="font-size:16px">${esc(pend.n)}</div><div class="meta">${esc(pend.plat)} · ${esc(pend.wk)} · weekly</div></div><div class="amt dr">${sgn(pend.a)}<span class="act">Post</span></div></div>
+ <div class="foot">carried forward — 10 accounts, 1 pending</div>`;
+}
+/* ---- Draft 2: Terminal ---- */
+function d2(){
+ const rows=people.map((p,i)=>{
+  const cls=p.a<0?'r':'g';
+  const act=(i===0)?'<span class="act">[PAID]</span>':'';
+  return `<div class="row ${p.settled?'settled':''}"><div><div class="nm">${esc(p.n).toUpperCase()}${p.settled?'<span class="tag">SETTLED</span>':''}</div><div class="meta">${esc(p.meta).toLowerCase()}</div></div><div class="amt ${p.settled?'':cls}">${sgn(p.a)}${act}</div></div>`;}).join('');
+ return `<div class="ticker">COLLECT<b>${f(col)}</b> · PAY<b class="r">${f(pay)}</b> · NET<b class="g">${sgn(net)}</b> · RON · <span class="a">LIVE</span></div>
+ <div class="brand">PAUL'S BOOK<span>03 SEP 26 · 10 ACCTS</span></div>
+ <nav class="tabs"><span class="on">[PEOPLE]</span><span>[STAKING]</span><span>[LOANS]</span><span>[INBOX <span class="a">1</span>]</span></nav>
+ <div class="cols"><span>NAME / PLATFORM</span><span>BALANCE</span></div>${rows}
+ <div class="cols"><span>INBOX — PENDING</span><span>WEEKLY</span></div>
+ <div class="pend"><div><div class="nm">${esc(pend.n).toUpperCase()}</div><div class="meta">${esc(pend.plat).toLowerCase()} · ${esc(pend.wk)}</div></div><div class="amt r">${sgn(pend.a)}<span class="act">[POST]</span></div></div>
+ <div class="foot">// last sync 12:04:31 · fx usd 4.5368 · aed 1.2353</div>`;
+}
+/* ---- Draft 3: Broadsheet ---- */
+function d3(){
+ const rows=people.map((p,i)=>{
+  const act=(i===0)?'<span class="act">Paid</span>':'';
+  return `<div class="row ${p.settled?'settled':''}"><div><div class="nm">${esc(p.n)}${p.settled?'<span class="tag">paid</span>':''}</div><div class="meta">${esc(p.meta)}</div></div><div class="amt ${(!p.settled&&p.a<0)?'neg':''}">${sgn(p.a)}${act}</div></div>`;}).join('');
+ return `<div class="brand"><span style="color:#111">Paul’s Book</span><span>3 Sep 2026</span></div>
+ <div class="hero"><div class="lab">Net position</div><div class="net">${sgn(net)}</div>
+  <div class="sub"><span>to collect <b>${f(col)}</b></span><span>to pay <b class="neg">${f(pay)}</b></span><span>RON</span></div></div>
+ <nav class="tabs"><span class="on">People</span><span>Staking</span><span>Loans</span><span>Inbox<em>1</em></span></nav>
+ <div class="sec">People</div>${rows}
+ <div class="sec">Pending</div>
+ <div class="pend"><div><div class="nm">${esc(pend.n)}</div><div class="meta">${esc(pend.plat)} · ${esc(pend.wk)} · weekly</div></div><div class="amt neg">${sgn(pend.a)}<span class="act">Post</span></div></div>
+ <div class="foot">10 accounts · 1 pending · rates live</div>`;
+}
+document.getElementById('d1').innerHTML=d1();
+document.getElementById('d2').innerHTML=d2();
+document.getElementById('d3').innerHTML=d3();
+
+/* switcher (narrow screens) */
+document.querySelectorAll('#switch button').forEach(b=>b.addEventListener('click',()=>{
+ document.querySelectorAll('#switch button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+ ['1','2','3'].forEach(n=>document.getElementById('p'+n).classList.toggle('active',n===b.dataset.p));
+ window.scrollTo({top:0,behavior:'smooth'});
+}));
+</script>
